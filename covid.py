@@ -87,6 +87,7 @@ def retrieve_covid_data():
             prev_inzidenz_PAF = item['PAF'][1]
             prev_inzidenz_KEH = item['KEH'][1]
             prev_inzidenz_EI = item['EI'][1]
+            break
     
     diff_IN  = float(inzidenz_dict['IN'][1])  - float(prev_inzidenz_IN)
     diff_PAF = float(inzidenz_dict['PAF'][1]) - float(prev_inzidenz_PAF)
