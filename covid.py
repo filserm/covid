@@ -78,9 +78,7 @@ def retrieve_covid_data():
 
     with shelve.open('inzidenz') as db:
         db[last_update]=inzidenz_dict
-        db['16.10.2020, 00:00 Uhr']={'IN': ['SK Ingolstadt', '20', '17.10.2020, 00:00 Uhr'], 'PAF': ['LK Pfaffenhofen a.d.Ilm', '15', '17.10.2020, 00:00 Uhr'], 'KEH': ['LK Kelheim', '40', '17.10.2020, 00:00 Uhr'], 'EI': ['LK Eichstätt', '12', '17.10.2020, 00:00 Uhr']}
-    
-    
+       
     prev_inzidenz = shelve.open('inzidenz')
 
     for k, item in reversed(sorted(prev_inzidenz.items())):
