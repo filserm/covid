@@ -11,6 +11,7 @@ import subprocess
 from requests.auth import HTTPBasicAuth
 import requests
 import os
+import shelve
 
 url = 'https://api.covid19api.com/dayone/country/germany'
 #url_IN = 'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=1%3D1&outFields=cases,county,last_update&returnGeometry=false&outSR=4326&f=json'
@@ -71,6 +72,33 @@ def retrieve_covid_data():
     inzidenz_dict['PAF'] = [str (data_IN['countyPAF'][0]), str(data_IN['cases7_per_100kPAF'][0])[:5], str(data_IN['last_updatePAF'][0])]
     inzidenz_dict['KEH'] = [str (data_IN['countyKEH'][0]), str(data_IN['cases7_per_100kKEH'][0])[:5], str(data_IN['last_updateKEH'][0])]
     inzidenz_dict['EI'] = [str (data_IN['countyEI'][0]), str(data_IN['cases7_per_100kEI'][0])[:5], str(data_IN['last_updateEI'][0])]
+
+    last_update = ingo.iloc[0][0]['attributes']['last_update']
+
+
+    with shelve.open('inzidenz') as db:
+        db[last_update]=inzidenz_dict
+        db['16.10.2020, 00:00 Uhr']={'IN': ['SK Ingolstadt', '20', '17.10.2020, 00:00 Uhr'], 'PAF': ['LK Pfaffenhofen a.d.Ilm', '15', '17.10.2020, 00:00 Uhr'], 'KEH': ['LK Kelheim', '40', '17.10.2020, 00:00 Uhr'], 'EI': ['LK Eichstätt', '12', '17.10.2020, 00:00 Uhr']}
+    
+    
+    prev_inzidenz = shelve.open('inzidenz')
+
+    for k, item in reversed(sorted(prev_inzidenz.items())):
+        if k != last_update:
+            prev_inzidenz_IN = item['IN'][1]
+            prev_inzidenz_PAF = item['PAF'][1]
+            prev_inzidenz_KEH = item['KEH'][1]
+            prev_inzidenz_EI = item['EI'][1]
+    
+    diff_IN  = float(inzidenz_dict['IN'][1])  - float(prev_inzidenz_IN)
+    diff_PAF = float(inzidenz_dict['PAF'][1]) - float(prev_inzidenz_PAF)
+    diff_KEH = float(inzidenz_dict['KEH'][1]) - float(prev_inzidenz_KEH)
+    diff_EI  = float(inzidenz_dict['EI'][1])  - float(prev_inzidenz_EI)
+    
+    inzidenz_dict['IN'] = inzidenz_dict['IN'] + [diff_IN]
+    inzidenz_dict['PAF'] = inzidenz_dict['PAF'] + [diff_PAF]
+    inzidenz_dict['KEH'] = inzidenz_dict['KEH'] + [diff_KEH]
+    inzidenz_dict['EI'] = inzidenz_dict['EI'] + [diff_EI]
 
     return data
 
@@ -164,6 +192,7 @@ def upload_html():
 def html():
     add_line=[]
     i = 1
+
     html_file = 'covid.html'
     htmlfile = open (html_file, 'w')
 
@@ -174,8 +203,9 @@ def html():
                 add_line.append(f'<th scope="row">{i}</th>')
                 county = inzidenz_dict[k][0]
                 inzidenz = inzidenz_dict[k][1]
+                inzidenz_vortag = inzidenz_dict[k][3]
                 last_update = inzidenz_dict[k][2]
-                new_inzidenz_obj = Inzidenz(county, inzidenz, last_update)
+                new_inzidenz_obj = Inzidenz(county, inzidenz, inzidenz_vortag, last_update)
                 new_line = new_inzidenz_obj.htmlcode()
                 add_line.append(new_line)     
                 add_line.append('</tr>')       
@@ -188,14 +218,20 @@ def html():
     htmlfile.close()
 
 class Inzidenz():
-    def __init__(self, county, inzidenz, last_update):
+    def __init__(self, county, inzidenz, inzidenz_vortag, last_update):
         self.county = county
         self.inzidenz = inzidenz
+        self.inzidenz_vortag = inzidenz_vortag
         self.last_update = last_update
     
     def htmlcode(self):
         #print (self.county, self.inzidenz, self.last_update)
-        return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td>{self.last_update}</td>'
+        if self.inzidenz_vortag >= 0:
+            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/green_up1.png" class="arrow">'
+        else:
+            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/red_down1.png" class="arrow">'
+
+        return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td>{self.inzidenz_vortag} {add_arrow}</td> <td>{self.last_update}</td>'
 
 def main():
     data = retrieve_covid_data()
@@ -216,17 +252,20 @@ html_code = '''
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
 <style> 
-img {
+img.arrow {
+  width: auto;
+  height: auto;
+}
+
+img.plot {
   width: 100%;
   height: auto;
-  /* Magic! */
-  max-width: 100vw;
- }
+}
 </style>
 
 <title>Covid</title>
 </head>
-<body>
+<body style="background-color:powderblue;">
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -239,20 +278,15 @@ img {
       <th scope="col">#</th>
       <th scope="col">Stadt/Landkreis</th>
       <th scope="col">7 Tage Inzidenz pro 100k Einwohner</th>
+      <th scope="col">Veränderung gg Vortag</th>
       <th scope="col">last update time</th>
     </tr>
   </thead>
   <tbody>
-    
       ##COVID_DATA##
-    
-    
   </tbody>
 </table>
-    
-  <div class="container-fluid">
-  <img src="https://storage.googleapis.com/darkshadow-share/plot.png">
-  </div>
+  <img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot">
 </body>
 </html>
 '''
