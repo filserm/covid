@@ -89,10 +89,10 @@ def retrieve_covid_data():
             prev_inzidenz_EI = item['EI'][1]
             break
     
-    diff_IN  = float(inzidenz_dict['IN'][1])  - float(prev_inzidenz_IN)
-    diff_PAF = float(inzidenz_dict['PAF'][1]) - float(prev_inzidenz_PAF)
-    diff_KEH = float(inzidenz_dict['KEH'][1]) - float(prev_inzidenz_KEH)
-    diff_EI  = float(inzidenz_dict['EI'][1])  - float(prev_inzidenz_EI)
+    diff_IN  = round(float(inzidenz_dict['IN'][1])  - float(prev_inzidenz_IN), 2)
+    diff_PAF = round(float(inzidenz_dict['PAF'][1]) - float(prev_inzidenz_PAF),2)
+    diff_KEH = round(float(inzidenz_dict['KEH'][1]) - float(prev_inzidenz_KEH),2)
+    diff_EI  = round(float(inzidenz_dict['EI'][1])  - float(prev_inzidenz_EI), 2)
     
     inzidenz_dict['IN'] = inzidenz_dict['IN'] + [diff_IN]
     inzidenz_dict['PAF'] = inzidenz_dict['PAF'] + [diff_PAF]
@@ -194,10 +194,13 @@ def html():
 
     html_file = 'covid.html'
     htmlfile = open (html_file, 'w')
+    #for k,v in sorted(inzidenz_dict.items()):
+    #    print (v[1])
+    #exit()
 
     for item in html_code.split("\n"):
         if item.find('##COVID_DATA##') > 0:
-            for k,v in inzidenz_dict.items():
+            for k,v in sorted(inzidenz_dict.items(), key=lambda x: x[1][1], reverse=True):
                 add_line.append('<tr>')
                 add_line.append(f'<th scope="row">{i}</th>')
                 county = inzidenz_dict[k][0]
@@ -211,7 +214,9 @@ def html():
                 i+=1
             new_line = ''.join(add_line)
             item = item.replace('##COVID_DATA##', new_line)
-            
+        if item.find('##LAST_UPDATE##') > 0:
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td> </td> <td class="text-warning">Letzte Aktualisierung</td> <td class="text-warning", colspan=2>{last_update}</td></tr>')
+
        
         htmlfile.write(item)
     htmlfile.close()
@@ -221,16 +226,17 @@ class Inzidenz():
         self.county = county
         self.inzidenz = inzidenz
         self.inzidenz_vortag = inzidenz_vortag
-        self.last_update = last_update
+        #self.last_update = last_update
     
     def htmlcode(self):
         #print (self.county, self.inzidenz, self.last_update)
-        if self.inzidenz_vortag >= 0:
-            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/green_up1.png" class="arrow">'
-        else:
-            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/red_down1.png" class="arrow">'
-
-        return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td>{self.inzidenz_vortag} {add_arrow}</td> <td>{self.last_update}</td>'
+        if self.inzidenz_vortag > 0:
+            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/red_up.png" class="arrow">'
+        elif self.inzidenz_vortag < 0:
+            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow">'
+        elif self.inzidenz_vortag == 0:
+            add_arrow = ''
+        return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td>{self.inzidenz_vortag} {add_arrow}</td>'
 
 def main():
     data = retrieve_covid_data()
@@ -252,8 +258,8 @@ html_code = '''
 
 <style> 
 img.arrow {
-  width: auto;
-  height: auto;
+  width: 34px;
+  height: 45px;
 }
 
 img.plot {
@@ -278,14 +284,15 @@ img.plot {
       <th scope="col">Stadt/Landkreis</th>
       <th scope="col">7 Tage Inzidenz pro 100k Einwohner</th>
       <th scope="col">Veränderung gg Vortag</th>
-      <th scope="col">last update time</th>
     </tr>
   </thead>
   <tbody>
       ##COVID_DATA##
+      ##LAST_UPDATE##
+      <tr><td colspan = 4><img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot"></td></tr>
   </tbody>
 </table>
-  <img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot">
+  
 </body>
 </html>
 '''
