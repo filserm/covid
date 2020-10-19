@@ -9,5 +9,5 @@ for k, item in prev_inzidenz.items():
     prev_inzidenz_PAF = item['PAF'][1]
     prev_inzidenz_KEH = item['KEH'][1]
     prev_inzidenz_EI = item['EI'][1]
+    print (item)
 
-print (prev_inzidenz_EI)

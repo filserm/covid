@@ -266,6 +266,11 @@ img.plot {
   width: 100%;
   height: auto;
 }
+
+img.logo {
+  width: 100px;
+  height: 100px;
+}
 </style>
 
 <title>Covid</title>
@@ -278,7 +283,12 @@ img.plot {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
   <table class="table table-dark">
-  <thead>
+  
+<thead>
+    <tr>
+        <tr><td colspan = 4 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona1.png" class="logo"></td>    
+    </tr>
+
     <tr>
       <th scope="col">#</th>
       <th scope="col">Stadt/Landkreis</th>
