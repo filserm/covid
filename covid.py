@@ -75,11 +75,13 @@ def retrieve_covid_data():
 
     last_update = ingo.iloc[0][0]['attributes']['last_update']
 
-
-    with shelve.open('inzidenz') as db:
+    path = os.path.join(os.path.expanduser("~"), 'inzidenz')
+    #shelve.open(path)
+    #with shelve.open('inzidenz') as db:
+    with shelve.open(path) as db:
         db[last_update]=inzidenz_dict
        
-    prev_inzidenz = shelve.open('inzidenz')
+    prev_inzidenz = shelve.open(path)
 
     for k, item in reversed(sorted(prev_inzidenz.items())):
         if k != last_update:
@@ -202,7 +204,7 @@ def html():
         if item.find('##COVID_DATA##') > 0:
             for k,v in sorted(inzidenz_dict.items(), key=lambda x: x[1][1], reverse=True):
                 add_line.append('<tr>')
-                add_line.append(f'<th scope="row">{i}</th>')
+                add_line.append(f'<th scope="row" class="align-middle">{i}</th>')
                 county = inzidenz_dict[k][0]
                 inzidenz = inzidenz_dict[k][1]
                 inzidenz_vortag = inzidenz_dict[k][3]
@@ -215,7 +217,7 @@ def html():
             new_line = ''.join(add_line)
             item = item.replace('##COVID_DATA##', new_line)
         if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td> </td> <td class="text-warning">Letzte Aktualisierung</td> <td class="text-warning", colspan=2>{last_update}</td></tr>')
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td> </td> <td class="text-warning", "align-middle">Letzte Aktualisierung</td> <td class="text-warning", colspan=2>{last_update}</td></tr>')
 
        
         htmlfile.write(item)
@@ -226,6 +228,8 @@ class Inzidenz():
         self.county = county
         self.inzidenz = inzidenz
         self.inzidenz_vortag = inzidenz_vortag
+        self.inzidenz_vortag_out = '{:>7}'.format(str(inzidenz_vortag))
+        print (self.inzidenz_vortag_out)
         #self.last_update = last_update
     
     def htmlcode(self):
@@ -236,7 +240,7 @@ class Inzidenz():
             add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow">'
         elif self.inzidenz_vortag == 0:
             add_arrow = ''
-        return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td>{self.inzidenz_vortag} {add_arrow}</td>'
+        return f'<td class="align-middle">{self.county}</td> <td class="align-middle">{self.inzidenz}</td> <td class="text-right">{self.inzidenz_vortag_out} {add_arrow}</td>'
 
 def main():
     data = retrieve_covid_data()
