@@ -75,7 +75,7 @@ def retrieve_covid_data():
 
     last_update = ingo.iloc[0][0]['attributes']['last_update']
 
-    path = os.path.join(os.path.expanduser("~"), 'inzidenz')
+    path = os.path.join(os.path.expanduser("~/covid/"), 'inzidenz')
     #shelve.open(path)
     #with shelve.open('inzidenz') as db:
     with shelve.open(path) as db:
