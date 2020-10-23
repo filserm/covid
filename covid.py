@@ -154,7 +154,7 @@ def plot_data(data):
             label_pct = '-\n' + label_pct[1:]
         else:
             label_pct = '+\n' + label_pct[0:]
-            print (label_pct)
+            #print (label_pct)
 
         ax.text(rect.get_x() + rect.get_width() / 2, height - 400, label_pct,
             ha='center', va='center', color='black', fontstyle='italic', fontsize = 6)
@@ -184,8 +184,8 @@ def upload_plot():
 
 def upload_html():
     gs_folder = "darkshadow-share"
-    cmd1 = 'gsutil cp covid.html gs://'+gs_folder+'/'
-    cmd2 = 'gsutil acl ch -u AllUsers:R gs://'+gs_folder+'/covid.html'
+    cmd1 = f'gsutil cp {html_filename} gs://{gs_folder}/'
+    cmd2 = f'gsutil acl ch -u AllUsers:R gs://{gs_folder}/{html_out_filename}'
     os.system(cmd1)
     os.system(cmd2)
 
@@ -193,18 +193,23 @@ def upload_html():
 def html():
     add_line=[]
     i = 1
+    html_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'covid_html_template.html')
+    html_template_file = open(html_template, 'r')
+    html_code = html_template_file.readlines()
 
-    html_file = 'covid.html'
-    htmlfile = open (html_file, 'w')
+    global html_out_filename, html_filename
+    html_out_filename = 'covid_new.html'
+    html_filename = os.path.join(os.path.expanduser("~/covid/html_output"), html_out_filename)
+    htmlfile = open (html_filename, 'w')
     #for k,v in sorted(inzidenz_dict.items()):
     #    print (v[1])
     #exit()
 
-    for item in html_code.split("\n"):
+    for item in html_code:
         if item.find('##COVID_DATA##') > 0:
             for k,v in sorted(inzidenz_dict.items(), key=lambda x: x[1][1], reverse=True):
                 add_line.append('<tr>')
-                add_line.append(f'<th scope="row" class="align-middle">{i}</th>')
+                add_line.append(f'<td class="align-middle">{i}</td>')
                 county = inzidenz_dict[k][0]
                 inzidenz = inzidenz_dict[k][1]
                 inzidenz_vortag = inzidenz_dict[k][3]
@@ -212,12 +217,14 @@ def html():
                 new_inzidenz_obj = Inzidenz(county, inzidenz, inzidenz_vortag, last_update)
                 new_line = new_inzidenz_obj.htmlcode()
                 add_line.append(new_line)     
-                add_line.append('</tr>')       
+                add_line.append('</tr>')     
                 i+=1
             new_line = ''.join(add_line)
+            #print (new_line, "\n")
+
             item = item.replace('##COVID_DATA##', new_line)
         if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td> </td> <td class="text-warning", "align-middle">Letzte Aktualisierung</td> <td class="text-warning", colspan=2>{last_update}</td></tr>')
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td> </td> <td class="text-warning">Letzte Aktualisierung</td> <td class="text-warning", colspan=4>{last_update}</td></tr>')
 
        
         htmlfile.write(item)
@@ -228,19 +235,23 @@ class Inzidenz():
         self.county = county
         self.inzidenz = inzidenz
         self.inzidenz_vortag = inzidenz_vortag
-        self.inzidenz_vortag_out = '{:>7}'.format(str(inzidenz_vortag))
-        print (self.inzidenz_vortag_out)
-        #self.last_update = last_update
-    
+        self.inzidenz_vortag_out = format(inzidenz_vortag, '.2f')
+        self.inzidenz_vortag_out = '{:>7}'.format(str(inzidenz_vortag)).replace('.',',')
+
     def htmlcode(self):
         #print (self.county, self.inzidenz, self.last_update)
         if self.inzidenz_vortag > 0:
             add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/red_up.png" class="arrow">'
+            arrow = "up"
         elif self.inzidenz_vortag < 0:
             add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow">'
+            arrow = "down"
         elif self.inzidenz_vortag == 0:
             add_arrow = ''
-        return f'<td class="align-middle">{self.county}</td> <td class="align-middle">{self.inzidenz}</td> <td class="text-right">{self.inzidenz_vortag_out} {add_arrow}</td>'
+        if arrow == "up":
+            return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td style= "align-bottom">{add_arrow}</td><td style="background-color: #f00148;">{self.inzidenz_vortag_out} </td>'
+        elif arrow == "down":
+            return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td class= "align-bottom">{add_arrow}</td><td style="color:black;background-color: #56f86b;" >{self.inzidenz_vortag_out} </td>'
 
 def main():
     data = retrieve_covid_data()
@@ -249,67 +260,6 @@ def main():
     html()
     upload_html()
 
-html_code = '''
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
-<style> 
-img.arrow {
-  width: 34px;
-  height: 45px;
-}
-
-img.plot {
-  width: 100%;
-  height: auto;
-}
-
-img.logo {
-  width: 100px;
-  height: 100px;
-}
-</style>
-
-<title>Covid</title>
-</head>
-<body style="background-color:powderblue;">
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-
-  <table class="table table-dark">
-  
-<thead>
-    <tr>
-        <tr><td colspan = 4 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona1.png" class="logo"></td>    
-    </tr>
-
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Stadt/Landkreis</th>
-      <th scope="col">7 Tage Inzidenz pro 100k Einwohner</th>
-      <th scope="col">Veränderung gg Vortag</th>
-    </tr>
-  </thead>
-  <tbody>
-      ##COVID_DATA##
-      ##LAST_UPDATE##
-      <tr><td colspan = 4><img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot"></td></tr>
-  </tbody>
-</table>
-  
-</body>
-</html>
-'''
 
 main()
 
