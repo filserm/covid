@@ -198,7 +198,7 @@ def html():
     html_code = html_template_file.readlines()
 
     global html_out_filename, html_filename
-    html_out_filename = 'covid_new.html'
+    html_out_filename = 'covid.html'
     html_filename = os.path.join(os.path.expanduser("~/covid/html_output"), html_out_filename)
     htmlfile = open (html_filename, 'w')
     #for k,v in sorted(inzidenz_dict.items()):
