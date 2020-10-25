@@ -248,6 +248,7 @@ class Inzidenz():
             arrow = "down"
         elif self.inzidenz_vortag == 0:
             add_arrow = ''
+            arrow = 'up'
         if arrow == "up":
             return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td style= "align-bottom">{add_arrow}</td><td style="background-color: #f00148;">{self.inzidenz_vortag_out} </td>'
         elif arrow == "down":
