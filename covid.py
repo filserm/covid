@@ -201,13 +201,10 @@ def html():
     html_out_filename = 'covid.html'
     html_filename = os.path.join(os.path.expanduser("~/covid/html_output"), html_out_filename)
     htmlfile = open (html_filename, 'w')
-    #for k,v in sorted(inzidenz_dict.items()):
-    #    print (v[1])
-    #exit()
 
     for item in html_code:
         if item.find('##COVID_DATA##') > 0:
-            for k,v in sorted(inzidenz_dict.items(), key=lambda x: x[1][1], reverse=True):
+            for k, v in sorted(inzidenz_dict.items(), key=lambda x: float(x[1][1]), reverse=True):
                 add_line.append('<tr>')
                 add_line.append(f'<td class="align-middle">{i}</td>')
                 county = inzidenz_dict[k][0]
@@ -249,10 +246,23 @@ class Inzidenz():
         elif self.inzidenz_vortag == 0:
             add_arrow = ''
             arrow = 'up'
+        if float(self.inzidenz) >= 100.00:
+            color = '#8B0000'
+            textcolor = 'white'
+        elif 50.00 <= float(self.inzidenz) < 100.00:
+            color = '#f00148'
+            textcolor = 'white'
+        elif 35.00 <= float(self.inzidenz) < 50.00:
+            color = 'orange'
+            textcolor = 'white'
+        elif float(self.inzidenz) < 35.00:
+            color = '#56f86b'
+            textcolor = 'black'
+
         if arrow == "up":
-            return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td style= "align-bottom">{add_arrow}</td><td style="background-color: #f00148;">{self.inzidenz_vortag_out} </td>'
+            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz}</td><td>{self.inzidenz_vortag_out} </td><td style=text-align:right important!>{add_arrow}</td>'
         elif arrow == "down":
-            return f'<td>{self.county}</td> <td>{self.inzidenz}</td> <td class= "align-bottom">{add_arrow}</td><td style="color:black;background-color: #56f86b;" >{self.inzidenz_vortag_out} </td>'
+            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz}</td><td>{self.inzidenz_vortag_out}</td><td style=text-align:right important!>{add_arrow}</td>'
 
 def main():
     data = retrieve_covid_data()
