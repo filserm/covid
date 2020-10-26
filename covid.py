@@ -231,6 +231,7 @@ class Inzidenz():
     def __init__(self, county, inzidenz, inzidenz_vortag, last_update):
         self.county = county
         self.inzidenz = inzidenz
+        self.inzidenz_out = '{:>7}'.format(str(inzidenz)).replace('.',',')
         self.inzidenz_vortag = inzidenz_vortag
         self.inzidenz_vortag_out = format(inzidenz_vortag, '.2f')
         self.inzidenz_vortag_out = '{:>7}'.format(str(inzidenz_vortag)).replace('.',',')
@@ -260,16 +261,16 @@ class Inzidenz():
             textcolor = 'black'
 
         if arrow == "up":
-            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz}</td><td>{self.inzidenz_vortag_out} </td><td style=text-align:right important!>{add_arrow}</td>'
+            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td style=text-align:right important!>{self.inzidenz_vortag_out} </td><td>{add_arrow}</td>'
         elif arrow == "down":
-            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz}</td><td>{self.inzidenz_vortag_out}</td><td style=text-align:right important!>{add_arrow}</td>'
+            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td style=text-align:right important!>{self.inzidenz_vortag_out}</td><td>{add_arrow}</td>'
 
 def main():
     data = retrieve_covid_data()
     plot_data(data)
     upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()
