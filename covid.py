@@ -14,11 +14,8 @@ import os
 import shelve
 
 url = 'https://api.covid19api.com/dayone/country/germany'
-#url_IN = 'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=1%3D1&outFields=cases,county,last_update&returnGeometry=false&outSR=4326&f=json'
-#url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27&outFields=last_update,county,cases7_per_100k&returnGeometry=false&outSR=4326&f=json'
-
 url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&returnGeometry=false&outSR=4326&f=json'
-
+rki_url = 'https://rki-covid-api.now.sh/api/'
 
 days = 14
 rolling_window_avg = 7
@@ -26,16 +23,28 @@ rolling_window_avg = 7
 def retrieve_covid_data():
     data = pd.DataFrame([])
     data = pd.read_json(url)
-   
-    #data_IN = pd.read_json(url_IN)
-    #data_IN = StringIO(obj.get()['Body'].read().decode('utf-8')) 
+ 
     data_IN = pd.DataFrame([])
     data_IN = pd.read_json(url_IN, lines=True)
 
+    data_rki = pd.DataFrame([])
+    data_rki = pd.read_json(rki_url)
 
-    #pprint (list(data.columns.values))
+    #print (data_rki)
 
-    
+    if data_rki.empty:
+        print ("RKI Daten nicht verfuegbar")
+    else:
+        last_update_rki = pd.to_datetime(data_rki['lastUpdate'], unit='ms').max()
+        last_update_rki = last_update_rki + timedelta(hours=1)
+        df_rki= pd.json_normalize(data_rki['states']) 
+    #print (df_rki)
+    print (last_update_rki)
+    summe_rki = df_rki['count'].sum()
+    print (summe_rki)
+
+    exit()
+
     if data.empty:
         print ("API Germany is not responding ...")
         #data = ['no data']
@@ -90,12 +99,16 @@ def retrieve_covid_data():
             prev_inzidenz_KEH = item['KEH'][1]
             prev_inzidenz_EI = item['EI'][1]
             break
+
+    print ("heute", round(float(inzidenz_dict['IN'][1])))
+    print ("gestern", float(prev_inzidenz_IN), 2)
     
     diff_IN  = round(float(inzidenz_dict['IN'][1])  - float(prev_inzidenz_IN), 2)
     diff_PAF = round(float(inzidenz_dict['PAF'][1]) - float(prev_inzidenz_PAF),2)
     diff_KEH = round(float(inzidenz_dict['KEH'][1]) - float(prev_inzidenz_KEH),2)
     diff_EI  = round(float(inzidenz_dict['EI'][1])  - float(prev_inzidenz_EI), 2)
-    
+    print (diff_IN)
+    exit()
     inzidenz_dict['IN'] = inzidenz_dict['IN'] + [diff_IN]
     inzidenz_dict['PAF'] = inzidenz_dict['PAF'] + [diff_PAF]
     inzidenz_dict['KEH'] = inzidenz_dict['KEH'] + [diff_KEH]
@@ -270,7 +283,7 @@ def main():
     plot_data(data)
     upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()
