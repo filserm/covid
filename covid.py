@@ -39,11 +39,11 @@ def retrieve_covid_data():
         last_update_rki = last_update_rki + timedelta(hours=1)
         df_rki= pd.json_normalize(data_rki['states']) 
     #print (df_rki)
-    print (last_update_rki)
+    #print (last_update_rki)
     summe_rki = df_rki['count'].sum()
-    print (summe_rki)
+    #print (summe_rki)
 
-    exit()
+
 
     if data.empty:
         print ("API Germany is not responding ...")
@@ -92,7 +92,8 @@ def retrieve_covid_data():
        
     prev_inzidenz = shelve.open(path)
 
-    for k, item in reversed(sorted(prev_inzidenz.items())):
+    for k, item in sorted(prev_inzidenz.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
+        print ("Datum", k)
         if k != last_update:
             prev_inzidenz_IN = item['IN'][1]
             prev_inzidenz_PAF = item['PAF'][1]
@@ -108,7 +109,7 @@ def retrieve_covid_data():
     diff_KEH = round(float(inzidenz_dict['KEH'][1]) - float(prev_inzidenz_KEH),2)
     diff_EI  = round(float(inzidenz_dict['EI'][1])  - float(prev_inzidenz_EI), 2)
     print (diff_IN)
-    exit()
+    
     inzidenz_dict['IN'] = inzidenz_dict['IN'] + [diff_IN]
     inzidenz_dict['PAF'] = inzidenz_dict['PAF'] + [diff_PAF]
     inzidenz_dict['KEH'] = inzidenz_dict['KEH'] + [diff_KEH]
@@ -283,7 +284,7 @@ def main():
     plot_data(data)
     upload_plot()
     html()
-    #upload_html()
+    upload_html()
 
 
 main()
