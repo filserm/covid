@@ -30,20 +30,17 @@ def retrieve_covid_data():
     data_rki = pd.DataFrame([])
     data_rki = pd.read_json(rki_url)
 
-    #print (data_rki)
-
+    global by_rki, de_rki
     if data_rki.empty:
         print ("RKI Daten nicht verfuegbar")
     else:
         last_update_rki = pd.to_datetime(data_rki['lastUpdate'], unit='ms').max()
         last_update_rki = last_update_rki + timedelta(hours=1)
         df_rki= pd.json_normalize(data_rki['states']) 
-    #print (df_rki)
-    #print (last_update_rki)
-    summe_rki = df_rki['count'].sum()
-    #print (summe_rki)
 
-
+    by_rki = df_rki.loc[[8],"count"]
+    by_rki = by_rki.iloc[0]
+    de_rki = df_rki['count'].sum()
 
     if data.empty:
         print ("API Germany is not responding ...")
@@ -93,7 +90,7 @@ def retrieve_covid_data():
     prev_inzidenz = shelve.open(path)
 
     for k, item in sorted(prev_inzidenz.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
-        print ("Datum", k)
+        #print ("Datum", k)
         if k != last_update:
             prev_inzidenz_IN = item['IN'][1]
             prev_inzidenz_PAF = item['PAF'][1]
@@ -101,20 +98,44 @@ def retrieve_covid_data():
             prev_inzidenz_EI = item['EI'][1]
             break
 
-    print ("heute", round(float(inzidenz_dict['IN'][1])))
-    print ("gestern", float(prev_inzidenz_IN), 2)
+    #print ("heute", round(float(inzidenz_dict['IN'][1])))
+    #print ("gestern", float(prev_inzidenz_IN), 2)
     
     diff_IN  = round(float(inzidenz_dict['IN'][1])  - float(prev_inzidenz_IN), 2)
     diff_PAF = round(float(inzidenz_dict['PAF'][1]) - float(prev_inzidenz_PAF),2)
     diff_KEH = round(float(inzidenz_dict['KEH'][1]) - float(prev_inzidenz_KEH),2)
     diff_EI  = round(float(inzidenz_dict['EI'][1])  - float(prev_inzidenz_EI), 2)
-    print (diff_IN)
+    #print (diff_IN)
     
     inzidenz_dict['IN'] = inzidenz_dict['IN'] + [diff_IN]
     inzidenz_dict['PAF'] = inzidenz_dict['PAF'] + [diff_PAF]
     inzidenz_dict['KEH'] = inzidenz_dict['KEH'] + [diff_KEH]
     inzidenz_dict['EI'] = inzidenz_dict['EI'] + [diff_EI]
+   
+    #fuer die RKI Zahlen 
+    global fallzahlen_dict
+    fallzahlen_dict = {}
+    #fallzahlen_dict['DE'] = [str('07.11.2020, 00:00 Uhr'), str (600000)]
+    fallzahlen_dict['DE'] = [str(last_update), str (de_rki)]
 
+    path = os.path.join(os.path.expanduser("~/covid/"), 'fallzahlen')
+    with shelve.open(path) as db:
+        db[last_update]=fallzahlen_dict
+        #db['07.11.2020, 00:00 Uhr']=fallzahlen_dict
+       
+    prev_fallzahl = shelve.open(path)
+    for k, item in sorted(prev_fallzahl.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
+        print ("Datum", k, "last_update", last_update)
+        if k != last_update:
+            print ("asf")
+            prev_fallzahl_DE = item['DE'][1]
+            #prev_fallzahl_BY = item['BY'][1]
+
+    global diff_DE
+    diff_DE  = int(float(de_rki)  - float(prev_fallzahl_DE))
+    diff_DE = f'{diff_DE:,}'
+    diff_DE = diff_DE.replace(',','.')
+    
     return data
 
 
@@ -234,9 +255,16 @@ def html():
             #print (new_line, "\n")
 
             item = item.replace('##COVID_DATA##', new_line)
+        if item.find('##RKI##') >0:
+            
+            item = item.replace('##RKI##' , f'<tr><td colspan = 2 class="text-primary">Neuinfektionen DE (RKI)</td> <td class="text-primary" style=text-align:center important!>{diff_DE}</td></tr>')
+            #item = item.replace('##RKI##' , f'<tr><td colspan = 2 class="text-primary">Neuinfektionen DE (RKI):  {diff_DE}</td></tr>')
+            
+       
         if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td> </td> <td class="text-warning">Letzte Aktualisierung</td> <td class="text-warning", colspan=4>{last_update}</td></tr>')
-
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung</td> <td class="text-warning", colspan=4>{last_update}</td></tr>')
+            #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
+        
        
         htmlfile.write(item)
     htmlfile.close()
@@ -284,7 +312,7 @@ def main():
     plot_data(data)
     upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()

@@ -8,8 +8,13 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <!-- <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'> -->
-    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Varela Round' rel='stylesheet' type='text/css'>
 <style> 
+
+body * {
+  font-family: Varela Round;
+
+}
 img.arrow {
   width: 32px;
   height: 17px;
@@ -44,14 +49,24 @@ td:nth-child(3) {
   align-content: center !important;
   text-align:center !important;
 }
-/* 
-body {
-  background-color: #343a40;
-  font-family: 'Oswald', sans-serif !important; 
-  font-family: 'Roboto', sans-serif;
-  font-size: 20px;
-} */
 
+#top, #bottom, #left, #right {
+	background: red;
+	position: fixed;
+	}
+	#left, #right {
+		top: 0; bottom: 0;
+		width: 7px;
+		}
+		#left { left: 0; }
+		#right { right: 0; }
+		
+	#top, #bottom {
+		left: 0; right: 0;
+		height: 7px;
+		}
+		#top { top: 0; }
+		#bottom { bottom: 0; }
 
 </style>
 
@@ -64,6 +79,12 @@ body {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     
+
+<!-- <div id="left"></div>
+<div id="right"></div>
+<div id="top"></div>
+<div id="bottom"></div> -->
+
   <table class="table table-dark">
   
 <thead>
@@ -80,7 +101,9 @@ body {
   </thead>
   <tbody>
       ##COVID_DATA##
+      ##RKI##
       ##LAST_UPDATE##
+      
       <tr><td colspan = 5><img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot"></td></tr>
   </tbody>
 </table>
