@@ -130,6 +130,7 @@ def retrieve_covid_data():
             print ("asf")
             prev_fallzahl_DE = item['DE'][1]
             #prev_fallzahl_BY = item['BY'][1]
+            break
 
     global diff_DE
     diff_DE  = int(float(de_rki)  - float(prev_fallzahl_DE))
@@ -257,12 +258,34 @@ def html():
             item = item.replace('##COVID_DATA##', new_line)
         if item.find('##RKI##') >0:
             
-            item = item.replace('##RKI##' , f'<tr><td colspan = 2 class="text-primary">Neuinfektionen DE (RKI)</td> <td class="text-primary" style=text-align:center important!>{diff_DE}</td></tr>')
+            item = item.replace('##RKI##' , f'''
+                   
+                    <tr><td colspan = 5  style=text-align:center important!;">
+                            <div style="font-size: 18px !important;
+                                        color:black;
+                                        background-color: lightgrey;
+                                        margin-top: 15px;
+                                        margin-bottom: 15px;
+                                        margin-left: 20px;
+                                        margin-right: 20px;
+                                        width:auto;
+                                        height:80px; 
+                                        border-style: ridge; 
+                                        border-color: red;
+                                        padding: 10px;
+                                        ">
+                                    Neuinfektionen gg Vortag DE (RKI)
+                            <br>{diff_DE}<br></td></div></tr>
+                            </td> 
+                    
+                              
+                    '''
+                    )
             #item = item.replace('##RKI##' , f'<tr><td colspan = 2 class="text-primary">Neuinfektionen DE (RKI):  {diff_DE}</td></tr>')
             
        
         if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung</td> <td class="text-warning", colspan=4>{last_update}</td></tr>')
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 >Letzte Aktualisierung</td> <td colspan=3>{last_update}</td></tr>')
             #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
         
        
@@ -283,12 +306,15 @@ class Inzidenz():
         if self.inzidenz_vortag > 0:
             add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/red_up.png" class="arrow">'
             arrow = "up"
+            effect = 'font-effect-fire-animation'
         elif self.inzidenz_vortag < 0:
             add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow">'
             arrow = "down"
+            effect = ''
         elif self.inzidenz_vortag == 0:
             add_arrow = ''
             arrow = 'up'
+            effect = ''
         if float(self.inzidenz) >= 100.00:
             color = '#8B0000'
             textcolor = 'white'
@@ -303,7 +329,7 @@ class Inzidenz():
             textcolor = 'black'
 
         if arrow == "up":
-            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td style=text-align:right important!>{self.inzidenz_vortag_out} </td><td>{add_arrow}</td>'
+            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td class={effect} style=text-align:right important!>{self.inzidenz_vortag_out} </td><td>{add_arrow}</td>'
         elif arrow == "down":
             return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td style=text-align:right important!>{self.inzidenz_vortag_out}</td><td>{add_arrow}</td>'
 
@@ -312,7 +338,7 @@ def main():
     plot_data(data)
     upload_plot()
     html()
-    #upload_html()
+    upload_html()
 
 
 main()
