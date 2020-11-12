@@ -264,18 +264,18 @@ def html():
                             <div style="font-size: 18px !important;
                                         color:black;
                                         background-color: lightgrey;
-                                        margin-top: 15px;
-                                        margin-bottom: 15px;
+                                        margin-top: 7px;
+                                        margin-bottom: 7px;
                                         margin-left: 20px;
                                         margin-right: 20px;
                                         width:auto;
-                                        height:80px; 
+                                        height:90px; 
                                         border-style: ridge; 
                                         border-color: red;
                                         padding: 10px;
                                         ">
                                     Neuinfektionen gg Vortag DE (RKI)
-                            <br>{diff_DE}<br></td></div></tr>
+                            <br><span>{diff_DE}</span><br></td></div></tr>
                             </td> 
                     
                               
