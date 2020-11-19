@@ -28,19 +28,15 @@ def retrieve_covid_data():
     data_IN = pd.read_json(url_IN, lines=True)
 
     data_rki = pd.DataFrame([])
-    data_rki = pd.read_json(rki_url)
-
+    data_rki = pd.read_json(rki_url, lines=True)
+   
     global by_rki, de_rki
     if data_rki.empty:
         print ("RKI Daten nicht verfuegbar")
     else:
-        last_update_rki = pd.to_datetime(data_rki['lastUpdate'], unit='ms').max()
-        last_update_rki = last_update_rki + timedelta(hours=1)
-        df_rki= pd.json_normalize(data_rki['states']) 
-
-    by_rki = df_rki.loc[[8],"count"]
-    by_rki = by_rki.iloc[0]
-    de_rki = df_rki['count'].sum()
+        de_rki_list = data_rki.values.tolist()
+        last_update_rki = de_rki_list[0][0]
+        de_rki = de_rki_list[0][2]
 
     if data.empty:
         print ("API Germany is not responding ...")
