@@ -15,7 +15,7 @@ import shelve
 
 url = 'https://api.covid19api.com/dayone/country/germany'
 url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&returnGeometry=false&outSR=4326&f=json'
-rki_url = 'https://rki-covid-api.now.sh/api/'
+rki_url = 'https://rki-covid-api.now.sh/api/general'
 
 days = 14
 rolling_window_avg = 7
@@ -27,16 +27,15 @@ def retrieve_covid_data():
     data_IN = pd.DataFrame([])
     data_IN = pd.read_json(url_IN, lines=True)
 
-    data_rki = pd.DataFrame([])
-    data_rki = pd.read_json(rki_url, lines=True)
-   
-    global by_rki, de_rki
-    if data_rki.empty:
-        print ("RKI Daten nicht verfuegbar")
-    else:
-        de_rki_list = data_rki.values.tolist()
-        last_update_rki = de_rki_list[0][0]
-        de_rki = de_rki_list[0][2]
+    global de_rki
+    #data_rki = pd.DataFrame([])
+    #data_rki = pd.read_json(rki_url, lines=True)
+    s = requests.Session()
+    resp = s.get(rki_url)
+    
+    data_rki = resp.json()
+    last_update_rki = data_rki['lastUpdate']
+    de_rki = data_rki['cases']
 
     if data.empty:
         print ("API Germany is not responding ...")
