@@ -12,10 +12,15 @@
     <link href='https://fonts.googleapis.com/css?family=Big Shoulders Stencil Text' rel='stylesheet'>
 <style> 
 
-body * {
+html, body * {
   font-family: Open Sans;
 
 }
+.table {
+  width: 100%;
+  margin-bottom: 0px;
+}
+
 img.arrow {
   width: 32px;
   height: 17px;
@@ -79,6 +84,7 @@ td:nth-child(3) {
 span {color: red;
     font-family: Big Shoulders Stencil Text;
     font-size: 26px;
+    background-color: lightgrey;
   }
 
 </style>
@@ -98,6 +104,15 @@ span {color: red;
 <div id="top"></div>
 <div id="bottom"></div> -->
 
+<table class="table table-dark">
+  <thead>
+    <tr><td colspan = 5 style="text-align:center"><img src="https://img.icons8.com/plasticine/100/000000/syringe.png"/></td><tr></tr>
+  </thead>
+  <tbody>
+    ##VACCINE##
+  </tbody>
+</table>
+
   <table class="table table-dark">
   
 <thead>
@@ -116,11 +131,13 @@ span {color: red;
   <tbody>
       ##COVID_DATA##
       ##RKI##
-      ##LAST_UPDATE##
+      ##LAST_UPDATE## 
       
-      <tr><td colspan = 5><img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot"></td></tr>
+      <!-- <tr><td colspan = 5><img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot"></td></tr> -->
   </tbody>
 </table>
   
+    
+
 </body>
 </html>

@@ -12,16 +12,59 @@ from requests.auth import HTTPBasicAuth
 import requests
 import os
 import shelve
-import ssl
+#import ssl
 
-ssl._create_default_https_context = ssl._create_unverified_context
+#ssl._create_default_https_context = ssl._create_unverified_context
 
 url = 'https://api.covid19api.com/dayone/country/germany'
 url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&returnGeometry=false&outSR=4326&f=json'
 rki_url = 'https://rki-covid-api.now.sh/api/general'
+vaccine_url = 'https://v2.rki.marlon-lueckert.de/vaccinations'
 
 days = 14
 rolling_window_avg = 7
+
+def retrieve_vaccine_data():
+    global vaccine_record
+
+    data = s = requests.Session()
+    resp = s.get(vaccine_url)
+    vaccine = resp.json()
+    last_update      = str(vaccine['meta']['lastUpdate'])
+    de_vaccine_total = vaccine['data']['vaccinated']
+    de_vaccine_delta = vaccine['data']['delta']
+    by_vaccine_total = vaccine['data']['states']['BY']['vaccinated']
+    by_vaccine_delta = vaccine['data']['states']['BY']['delta']
+
+    de_vaccine_total = f'{de_vaccine_total:,}'
+    de_vaccine_total = de_vaccine_total.replace(',','.')
+
+    de_vaccine_delta = f'{de_vaccine_delta:,}'
+    de_vaccine_delta = de_vaccine_delta.replace(',','.')
+
+    by_vaccine_total = f'{by_vaccine_total:,}'
+    by_vaccine_total = by_vaccine_total.replace(',','.')
+
+    by_vaccine_delta = f'{by_vaccine_delta:,}'
+    by_vaccine_delta = by_vaccine_delta.replace(',','.')
+
+    #print (last_update, de_vaccine_total, de_vaccine_delta, by_vaccine_total, by_vaccine_delta)
+    global vaccine_dict
+    vaccine_dict = {}
+    vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta]
+    vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta]
+
+    path = os.path.join(os.path.expanduser("~/covid/"), 'vaccine_db')
+    with shelve.open(path) as db:
+        db[last_update]=vaccine_dict
+       
+    vaccineDB = shelve.open(path)
+
+    for k, item in sorted(vaccineDB.items(), key=lambda x: (dt.strptime(x[0][:10], '%Y-%m-%d')), reverse=True):
+        #print ("Datum", k, "item", item)
+        vaccine_record = item
+
+    
 
 def retrieve_covid_data():
     data = pd.DataFrame([])
@@ -225,6 +268,7 @@ def upload_html():
 
 
 def html():
+    
     add_line=[]
     i = 1
     html_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'covid_html_template.html')
@@ -286,6 +330,26 @@ def html():
             item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 >Letzte Aktualisierung</td> <td colspan=3>{last_update}</td></tr>')
             #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
         
+        if item.find('##VACCINE##') >0:
+            item = item.replace('##VACCINE##' ,f"""
+                        
+                        <tr>
+                            <td></td>
+                            <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png"/> </td>
+                            <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png"/> </td>
+                        <tr>
+                            <td>Gesamt</td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}</td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]} </td>
+                        </tr>
+                        <tr>
+                            <td>Diff gg Vortag</td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][1]} </td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][1]} </td>
+                        </tr>
+
+            
+                        """)
        
         htmlfile.write(item)
     htmlfile.close()
@@ -333,10 +397,11 @@ class Inzidenz():
 
 def main():
     data = retrieve_covid_data()
-    plot_data(data)
-    upload_plot()
+    retrieve_vaccine_data()
+    #plot_data(data)
+    #upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()
