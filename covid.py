@@ -401,7 +401,7 @@ def main():
     #plot_data(data)
     #upload_plot()
     html()
-    #upload_html()
+    upload_html()
 
 
 main()
