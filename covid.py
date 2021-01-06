@@ -28,9 +28,9 @@ vaccine_url = 'https://v2.rki.marlon-lueckert.de/vaccinations'
 
 days = 14
 rolling_window_avg = 7
-now = dt.now()
+now = dt.now() + timedelta(hours=1)
 
-now = now.strftime("%d.%m.%Y, %H:%M Uhr")
+now = now.strftime("%d.%m.%Y, %H:%M Uhr") 
 
 def retrieve_vaccine_data():
     global vaccine_record, last_update_vaccine_formated
@@ -76,8 +76,8 @@ def retrieve_vaccine_data():
 
     for k, item in sorted(vaccineDB.items(), key=lambda x: (dt.strptime(x[0][:10], '%Y-%m-%d')), reverse=True):
         #print ("Datum", k, "item", item)
-        vaccine_record = item
-        print (vaccine_record)
+        vaccine_record =  item
+        print (k, vaccine_record)
 
     
 
@@ -299,7 +299,7 @@ def html():
         if item.find('##COVID_DATA##') > 0:
             for k, v in sorted(inzidenz_dict.items(), key=lambda x: float(x[1][1]), reverse=True):
                 add_line.append('<tr>')
-                add_line.append(f'<td class="align-middle">{i}</td>')
+                add_line.append(f'<td class="text-align:center;">{i}</td>')
                 county = inzidenz_dict[k][0]
                 inzidenz = inzidenz_dict[k][1]
                 inzidenz_vortag = inzidenz_dict[k][3]
@@ -317,7 +317,7 @@ def html():
             
             item = item.replace('##RKI##' , f'''
                    
-                    <tr><td colspan = 5  style=text-align:center important!;">
+                    <tr><td colspan = 6 style=text-align:center important!;">
                             <div style="font-size: 18px !important;
                                         color:black;
                                         background-color: lightgrey;
@@ -342,13 +342,13 @@ def html():
             
        
         if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 style="font-size: 10px !important;">Letzte Aktualisierung RKI</td> <td colspan=3 style="font-size: 10px !important;">{last_update}</td></tr>')
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 style="font-size: 10px !important;">Letzte Aktualisierung RKI</td> <td colspan=4 style="font-size: 10px !important;">{last_update}</td></tr>')
             #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
         
         if item.find('##VACCINE_HEADER##') >0:
             item = item.replace('##VACCINE_HEADER##' ,f"""
                         <tr>
-                        <td colspan = 6 style="text-align:center"><img src="https://img.icons8.com/plasticine/100/000000/syringe.png"/></td>
+                        <td colspan = 6 class="logo" style="text-align:center"><img src="https://img.icons8.com/plasticine/100/000000/syringe.png"/></td>
                         </tr>
                         """)
 
@@ -372,14 +372,12 @@ def html():
                         </tr>
                         <tr>
                             <td colspan = 2 style="font-size: 10px !important;">letzte Aktualisierung RKI</td>
-                            <td colspan = 4 style="font-size: 10px !important;
-                                                   text-align:right !important">{last_update_vaccine_formated}</td>
+                            <td colspan = 4 style="font-size: 10px !important;">{last_update_vaccine_formated}</td>
                             
                         </tr>
                         <tr>
                             <td colspan = 2 style="font-size: 10px !important;">letzter Check</td>
-                            <td colspan = 4 style="font-size: 10px !important;
-                                                   text-align:right !important">{now}</td>
+                            <td colspan = 4 style="font-size: 10px !important;">{now}</td>
                            
                         </tr>
 
@@ -426,9 +424,9 @@ class Inzidenz():
             textcolor = 'black'
 
         if arrow == "up":
-            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td class={effect} style=text-align:right important!>{self.inzidenz_vortag_out} </td><td>{add_arrow}</td>'
+            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td class={effect} style=text-align:right important!>{self.inzidenz_vortag_out} </td><td colspan=2>{add_arrow}</td>'
         elif arrow == "down":
-            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td style=text-align:right important!>{self.inzidenz_vortag_out}</td><td>{add_arrow}</td>'
+            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td style=text-align:right important!>{self.inzidenz_vortag_out}</td><td colspan=2>{add_arrow}</td>'
 
 def main():
     data = retrieve_covid_data()

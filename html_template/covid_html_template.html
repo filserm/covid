@@ -15,6 +15,7 @@
 html, body * {
   font-family: Open Sans;
   background-color: #212529;
+  
 
 }
 .table {
@@ -41,46 +42,40 @@ img.logo {
 
 td {
   vertical-align: middle !important;
+  /*text-align: center !important;*/
   font-weight: bold !important;
 } 
 
 td:nth-child(1) {
+  padding-left: 15px !important;
+  text-align: left;
+}
+
+td:nth-child(2) {
   padding: 0px !important;
+  text-align: left;
 }
 
-
-td:nth-child(5) {
-  width: 8px;
-  text-align: right !important;
-  font-weight: bold;
- }
- td:nth-child(4) {
-  width: 12px;
-  align-content: center !important;
-   }
 td:nth-child(3) {
-  width: 12px;
-  align-content: center !important;
-  text-align:center !important;
+  padding: 0px !important;
+  text-align: center;
+}
+td:nth-child(4) {
+  padding: 0px !important;
+  text-align: center;
+}
+td:nth-child(5) {
+  text-align: right !important;
+  align-items: center;
+  /*padding-right: 15px !important;*/
+}
+td:nth-child(6) {
+  text-align: right !important;
+  align-items: center;
+  padding-right: 20px !important;
 }
 
-#top, #bottom, #left, #right {
-	background: red;
-	position: fixed;
-	}
-	#left, #right {
-		top: 0; bottom: 0;
-		width: 7px;
-		}
-		#left { left: 0; }
-		#right { right: 0; }
-		
-	#top, #bottom {
-		left: 0; right: 0;
-		height: 7px;
-		}
-		#top { top: 0; }
-		#bottom { bottom: 0; }
+
 
 span {color: red;
     font-family: Big Shoulders Stencil Text;
@@ -118,7 +113,7 @@ span {color: red;
   
 <thead>
     <tr>
-        <tr><td colspan = 5 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona1.png" class="logo"></td>    
+        <tr><td colspan = 6 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona1.png" class="logo"></td>    
           <!-- <tr><td colspan = 5 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona_christmas.jpeg" class="logo"></td>   -->
     </tr>
 
@@ -126,7 +121,7 @@ span {color: red;
       <th scope="col" style="vertical-align: middle">#</th>
       <th scope="col" style="vertical-align: middle">Stadt/Landkreis</th>
       <th scope="col" style="vertical-align: middle">7 Tage Inzidenz pro 100k Einwohner</th>
-      <th colspan = 2 scope="col" style="vertical-align: middle">Diff gg Vortag</th> 
+      <th colspan = 3 scope="col" style="vertical-align: middle; text-align:left;">Diff gg Vortag</th> 
     </tr>
   </thead>
   <tbody>
