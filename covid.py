@@ -13,11 +13,11 @@ import requests
 import os
 import shelve
 #import ssl
-import locale
+#import locale
 import dateutil.parser
 
 #locale.setlocale(locale.LC_TIME, "de_DE")
-locale.setlocale(locale.LC_ALL, "de_DE.UTF8")
+#locale.setlocale(locale.LC_ALL, "de_DE.UTF8")
 
 #ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -30,8 +30,7 @@ days = 14
 rolling_window_avg = 7
 now = dt.now()
 
-now = now.strftime("%A %d. %B %Y, %H:%M Uhr")
-
+now = now.strftime("%d.%m.%Y, %H:%M Uhr")
 
 def retrieve_vaccine_data():
     global vaccine_record, last_update_vaccine_formated
@@ -41,7 +40,7 @@ def retrieve_vaccine_data():
     vaccine = resp.json()
     last_update_vaccine      = vaccine['meta']['lastUpdate']
     last_update_vaccine      = dateutil.parser.parse(last_update_vaccine)
-    last_update_vaccine_formated = last_update_vaccine.strftime("%A, %d. %B %Y, %H:%M Uhr")
+    last_update_vaccine_formated = last_update_vaccine.strftime("%d.%m.%Y, %H:%M Uhr")
     print (last_update_vaccine_formated)
     
     last_update_vaccine      = str(last_update_vaccine)
