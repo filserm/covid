@@ -13,6 +13,11 @@ import requests
 import os
 import shelve
 #import ssl
+import locale
+import dateutil.parser
+
+#locale.setlocale(locale.LC_TIME, "de_DE")
+locale.setlocale(locale.LC_ALL, "de_DE.UTF8")
 
 #ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -23,18 +28,28 @@ vaccine_url = 'https://v2.rki.marlon-lueckert.de/vaccinations'
 
 days = 14
 rolling_window_avg = 7
+now = dt.now()
+
+now = now.strftime("%A %d. %B %Y, %H:%M Uhr")
+
 
 def retrieve_vaccine_data():
-    global vaccine_record
+    global vaccine_record, last_update_vaccine_formated
 
     data = s = requests.Session()
     resp = s.get(vaccine_url)
     vaccine = resp.json()
-    last_update      = str(vaccine['meta']['lastUpdate'])
+    last_update_vaccine      = vaccine['meta']['lastUpdate']
+    last_update_vaccine      = dateutil.parser.parse(last_update_vaccine)
+    last_update_vaccine_formated = last_update_vaccine.strftime("%A, %d. %B %Y, %H:%M Uhr")
+    print (last_update_vaccine_formated)
+    
+    last_update_vaccine      = str(last_update_vaccine)
     de_vaccine_total = vaccine['data']['vaccinated']
     de_vaccine_delta = vaccine['data']['delta']
     by_vaccine_total = vaccine['data']['states']['BY']['vaccinated']
     by_vaccine_delta = vaccine['data']['states']['BY']['delta']
+    last_checked = vaccine['data']['states']['BY']['delta']
 
     de_vaccine_total = f'{de_vaccine_total:,}'
     de_vaccine_total = de_vaccine_total.replace(',','.')
@@ -56,13 +71,14 @@ def retrieve_vaccine_data():
 
     path = os.path.join(os.path.expanduser("~/covid/"), 'vaccine_db')
     with shelve.open(path) as db:
-        db[last_update]=vaccine_dict
+        db[last_update_vaccine]=vaccine_dict
        
     vaccineDB = shelve.open(path)
 
     for k, item in sorted(vaccineDB.items(), key=lambda x: (dt.strptime(x[0][:10], '%Y-%m-%d')), reverse=True):
         #print ("Datum", k, "item", item)
         vaccine_record = item
+        print (vaccine_record)
 
     
 
@@ -327,9 +343,16 @@ def html():
             
        
         if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 >Letzte Aktualisierung</td> <td colspan=3>{last_update}</td></tr>')
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 style="font-size: 10px !important;">Letzte Aktualisierung RKI</td> <td colspan=3 style="font-size: 10px !important;">{last_update}</td></tr>')
             #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
         
+        if item.find('##VACCINE_HEADER##') >0:
+            item = item.replace('##VACCINE_HEADER##' ,f"""
+                        <tr>
+                        <td colspan = 6 style="text-align:center"><img src="https://img.icons8.com/plasticine/100/000000/syringe.png"/></td>
+                        </tr>
+                        """)
+
         if item.find('##VACCINE##') >0:
             item = item.replace('##VACCINE##' ,f"""
                         
@@ -337,15 +360,31 @@ def html():
                             <td></td>
                             <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png"/> </td>
                             <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png"/> </td>
+                            <td></td>
+                        </tr>
                         <tr>
                             <td>Gesamt</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]} </td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Diff gg Vortag</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][1]} </td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][1]} </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan = 2 style="font-size: 10px !important;">letzte Aktualisierung RKI</td>
+                            <td colspan = 4 style="font-size: 10px !important;
+                                                   text-align:right !important">{last_update_vaccine_formated}</td>
+                            
+                        </tr>
+                        <tr>
+                            <td colspan = 2 style="font-size: 10px !important;">letzter Check</td>
+                            <td colspan = 4 style="font-size: 10px !important;
+                                                   text-align:right !important">{now}</td>
+                           
                         </tr>
 
             
@@ -401,7 +440,7 @@ def main():
     #plot_data(data)
     #upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()
