@@ -21,6 +21,11 @@ import dateutil.parser
 
 #ssl._create_default_https_context = ssl._create_unverified_context
 
+global smiley
+spritze = "\\U0001F489".encode("latin_1")
+smiley = (spritze.decode("raw_unicode_escape").encode('utf-16', 'surrogatepass').decode('utf-16'))
+
+
 url = 'https://api.covid19api.com/dayone/country/germany'
 url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&returnGeometry=false&outSR=4326&f=json'
 rki_url = 'https://rki-covid-api.now.sh/api/general'
@@ -348,7 +353,9 @@ def html():
         if item.find('##VACCINE_HEADER##') >0:
             item = item.replace('##VACCINE_HEADER##' ,f"""
                         <tr>
-                        <td colspan = 6 class="logo" style="text-align:center"><img src="https://img.icons8.com/plasticine/100/000000/syringe.png"/></td>
+                        <!-- <td colspan = 6 class="logo" style="text-align:center"><img src="https://img.icons8.com/plasticine/100/000000/syringe.png"/></td> -->
+                        <td colspan = 6 style="text-align:center; font-size: 62px;">{smiley}</td>
+                        
                         </tr>
                         """)
 
