@@ -371,13 +371,13 @@ def html():
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][1]} </td>
                         </tr>
                         <tr>
-                            <td colspan = 2 style="font-size: 10px !important;">letzte Aktualisierung RKI</td>
-                            <td colspan = 4 style="font-size: 10px !important;">{last_update_vaccine_formated}</td>
+                            <td colspan = 3 style="font-size: 10px !important;">letzte Aktualisierung RKI</td>
+                            <td colspan = 3 style="font-size: 10px !important;">{last_update_vaccine_formated}</td>
                             
                         </tr>
                         <tr>
-                            <td colspan = 2 style="font-size: 10px !important;">letzter Check</td>
-                            <td colspan = 4 style="font-size: 10px !important;">{now}</td>
+                            <td colspan = 3 style="font-size: 10px !important;">letzter Check</td>
+                            <td colspan = 3 style="font-size: 10px !important;">{now}</td>
                            
                         </tr>
 
