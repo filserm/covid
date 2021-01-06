@@ -356,22 +356,19 @@ def html():
             item = item.replace('##VACCINE##' ,f"""
                         
                         <tr>
-                            <td></td>
+                            <td colspan = 2></td>
                             <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png"/> </td>
                             <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png"/> </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>Gesamt</td>
+                            <td colspan = 2>Gesamt</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]} </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>Diff gg Vortag</td>
+                            <td colspan = 2>Diff gg Vortag</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][1]} </td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][1]} </td>
-                            <td></td>
                         </tr>
                         <tr>
                             <td colspan = 2 style="font-size: 10px !important;">letzte Aktualisierung RKI</td>
