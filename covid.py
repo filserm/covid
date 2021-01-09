@@ -324,7 +324,8 @@ def html():
                    
                     <tr><td colspan = 6 style=text-align:center important!;">
                             <div style="font-size: 18px !important;
-                                        color:black;
+                                        
+                                        color: white;
                                         background-color: lightgrey;
                                         margin-top: 7px;
                                         margin-bottom: 7px;
@@ -364,15 +365,15 @@ def html():
                         
                         <tr>
                             <td colspan = 2></td>
-                            <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png"/> </td>
-                            <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png"/> </td>
+                            <td class="logo" colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png" class="flags"> </td>
+                            <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png" class="flags"> </td>
                         </tr>
                         <tr>
                             <td colspan = 2>Gesamt</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]} </td>
                         </tr>
-                        <tr>
+                        <tr> 
                             <td colspan = 2>Diff gg Vortag</td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][1]} </td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][1]} </td>
@@ -441,7 +442,7 @@ def main():
     #plot_data(data)
     #upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()
