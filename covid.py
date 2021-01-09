@@ -354,8 +354,8 @@ def html():
         if item.find('##VACCINE_HEADER##') >0:
             item = item.replace('##VACCINE_HEADER##' ,f"""
                         <tr>
-                        <!-- <td colspan = 6 class="logo" style="text-align:center"><img src="https://img.icons8.com/plasticine/100/000000/syringe.png"/></td> -->
-                        <td colspan = 6 style="text-align:center; font-size: 62px;">{smiley}</td>
+                        <td colspan = 6 class="logo" style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/vaccine.svg" class="logo"></td> 
+                        <!-- <td colspan = 6 style="text-align:center; font-size: 62px;">{smiley}</td> -->
                         
                         </tr>
                         """)
