@@ -419,22 +419,23 @@ class Inzidenz():
             arrow = 'up'
             effect = ''
         if float(self.inzidenz) >= 100.00:
-            color = '#8B0000'
-            textcolor = 'white'
+            #color = '#ff0000'
+            color = 'red'
+            #textcolor = 'white'
         elif 50.00 <= float(self.inzidenz) < 100.00:
             color = '#f00148'
-            textcolor = 'white'
+            #textcolor = 'white'
         elif 35.00 <= float(self.inzidenz) < 50.00:
             color = 'orange'
-            textcolor = 'white'
+            #textcolor = 'white'
         elif float(self.inzidenz) < 35.00:
             color = '#56f86b'
-            textcolor = 'black'
+            #textcolor = 'black'
 
         if arrow == "up":
-            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td class={effect} style=text-align:right important!>{self.inzidenz_vortag_out} </td><td colspan=2>{add_arrow}</td>'
+            return f'<td>{self.county}</td> <td style="color:{color} !important;"><strong>{self.inzidenz_out}</strong></td><td class={effect} style=text-align:right important!>{self.inzidenz_vortag_out} </td><td colspan=2>{add_arrow}</td>'
         elif arrow == "down":
-            return f'<td>{self.county}</td> <td style=color:{textcolor};background-color:{color} important!;>{self.inzidenz_out}</td><td style=text-align:right important!>{self.inzidenz_vortag_out}</td><td colspan=2>{add_arrow}</td>'
+            return f'<td>{self.county}</td> <td style="color:{color} !important;"><strong>{self.inzidenz_out}</strong></td><td style=text-align:right important!>{self.inzidenz_vortag_out}</td><td colspan=2>{add_arrow}</td>'
 
 def main():
     data = retrieve_covid_data()
