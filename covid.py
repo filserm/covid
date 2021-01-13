@@ -348,16 +348,16 @@ def html():
             
        
         if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 style="font-size: 10px !important;">Letzte Aktualisierung RKI</td> <td colspan=4 style="font-size: 10px !important;">{last_update}</td></tr>')
+            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 6 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung RKI {last_update}</td></tr>')
             #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
         
         if item.find('##VACCINE_HEADER##') >0:
             item = item.replace('##VACCINE_HEADER##' ,f"""
-                        <tr>
-                        <td colspan = 6 class="logo" style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/vaccine.svg" class="logo"></td> 
-                        <!-- <td colspan = 6 style="text-align:center; font-size: 62px;">{smiley}</td> -->
                         
-                        </tr>
+                        <th colspan = 6 class="logo" style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/vaccine.svg" class="logo"></th> 
+                        <!-- <th colspan = 6 style="text-align:center; font-size: 62px;">{smiley}</th> -->
+                        
+                        
                         """)
 
         if item.find('##VACCINE##') >0:
@@ -379,15 +379,11 @@ def html():
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][1]} </td>
                         </tr>
                         <tr>
-                            <td colspan = 3 style="font-size: 10px !important;">letzte Aktualisierung RKI</td>
-                            <td colspan = 3 style="font-size: 10px !important;">{last_update_vaccine_formated}</td>
+                            <td colspan =  6 style="font-size: 10px !important; text-align:right !important;">letzte Aktualisierung RKI {last_update_vaccine_formated}<br>letzter Check {now}</td>
+                           
                             
                         </tr>
-                        <tr>
-                            <td colspan = 3 style="font-size: 10px !important;">letzter Check</td>
-                            <td colspan = 3 style="font-size: 10px !important;">{now}</td>
-                           
-                        </tr>
+                      
 
             
                         """)
