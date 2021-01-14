@@ -151,9 +151,6 @@ def retrieve_covid_data():
        
     prev_inzidenz = shelve.open(path)
 
-    print (last_update)
-    exit()
-
     for k, item in sorted(prev_inzidenz.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
         #print ("Datum", k)
         if k != last_update:
