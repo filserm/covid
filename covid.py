@@ -12,14 +12,24 @@ from requests.auth import HTTPBasicAuth
 import requests
 import os
 import shelve
-#import ssl
+import ssl
 #import locale
 import dateutil.parser
 
 #locale.setlocale(locale.LC_TIME, "de_DE")
 #locale.setlocale(locale.LC_ALL, "de_DE.UTF8")
 
-#ssl._create_default_https_context = ssl._create_unverified_context
+ssl._create_default_https_context = ssl._create_unverified_context
+#, cafile="/vagrant/certs/selfsigned.crt"
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    # Legacy Python that doesn't verify HTTPS certificates by default
+    pass
+else:
+    # Handle target environment that doesn't support HTTPS verification
+    ssl._create_default_https_context = _create_unverified_https_context
 
 global smiley
 spritze = "\\U0001F489".encode("latin_1")
@@ -30,6 +40,7 @@ url = 'https://api.covid19api.com/dayone/country/germany'
 #url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&returnGeometry=false&outSR=4326&f=json'
 url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&outSR=4326&f=json'
 rki_url = 'https://rki-covid-api.now.sh/api/general'
+rki_url = 'http://35.225.82.9:8080/germany'
 vaccine_url = 'https://v2.rki.marlon-lueckert.de/vaccinations'
 
 days = 14
@@ -101,7 +112,8 @@ def retrieve_covid_data():
     resp = s.get(rki_url)
     
     data_rki = resp.json()
-    last_update_rki = data_rki['lastUpdate']
+    #last_update_rki = data_rki['lastUpdate']
+    last_update_rki = data_rki['meta']['lastUpdate']
     de_rki = data_rki['cases']
 
     if data.empty:
@@ -440,7 +452,7 @@ def main():
     #plot_data(data)
     #upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()
