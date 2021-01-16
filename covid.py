@@ -38,9 +38,11 @@ smiley = (spritze.decode("raw_unicode_escape").encode('utf-16', 'surrogatepass')
 
 url = 'https://api.covid19api.com/dayone/country/germany'
 #url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&returnGeometry=false&outSR=4326&f=json'
-url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&outSR=4326&f=json'
-rki_url = 'https://rki-covid-api.now.sh/api/general'
-rki_url = 'http://35.209.215.136:8080/germany'
+#url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=cases7_per_100k,last_update,county&outSR=4326&f=json'
+url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20DACHAU%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=county,cases7_per_100k,last_update&returnGeometry=false&outSR=4326&f=json'
+
+rki_url = 'https://api.corona-zahlen.org/germany'
+#rki_url = 'http://35.209.215.136:8080/germany'
 vaccine_url = 'https://v2.rki.marlon-lueckert.de/vaccinations'
 
 days = 14
@@ -148,10 +150,15 @@ def retrieve_covid_data():
     data_IN['last_updateEI'] = ingo.iloc[0][3]['attributes']['last_update']
     data_IN['cases7_per_100kEI'] = ingo.iloc[0][3]['attributes']['cases7_per_100k']
 
+    data_IN['countyDAH'] = ingo.iloc[0][4]['attributes']['county']
+    data_IN['last_updateDAH'] = ingo.iloc[0][4]['attributes']['last_update']
+    data_IN['cases7_per_100kDAH'] = ingo.iloc[0][4]['attributes']['cases7_per_100k']
+
     inzidenz_dict['IN'] = [str (data_IN['countyIN'][0]), str(data_IN['cases7_per_100kIN'][0])[:5], str(data_IN['last_updateIN'][0])]
     inzidenz_dict['PAF'] = [str (data_IN['countyPAF'][0]), str(data_IN['cases7_per_100kPAF'][0])[:5], str(data_IN['last_updatePAF'][0])]
     inzidenz_dict['KEH'] = [str (data_IN['countyKEH'][0]), str(data_IN['cases7_per_100kKEH'][0])[:5], str(data_IN['last_updateKEH'][0])]
     inzidenz_dict['EI'] = [str (data_IN['countyEI'][0]), str(data_IN['cases7_per_100kEI'][0])[:5], str(data_IN['last_updateEI'][0])]
+    inzidenz_dict['DAH'] = [str (data_IN['countyDAH'][0]), str(data_IN['cases7_per_100kDAH'][0])[:5], str(data_IN['last_updateDAH'][0])]
 
     last_update = ingo.iloc[0][0]['attributes']['last_update']
 
@@ -159,17 +166,27 @@ def retrieve_covid_data():
     #shelve.open(path)
     #with shelve.open('inzidenz') as db:
     with shelve.open(path) as db:
+        #print ("key:", last_update)
+        #print ("value:", inzidenz_dict)
         db[last_update]=inzidenz_dict
        
+    
     prev_inzidenz = shelve.open(path)
 
     for k, item in sorted(prev_inzidenz.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
         #print ("Datum", k)
         if k != last_update:
+            print (last_update)
             prev_inzidenz_IN = item['IN'][1]
             prev_inzidenz_PAF = item['PAF'][1]
             prev_inzidenz_KEH = item['KEH'][1]
             prev_inzidenz_EI = item['EI'][1]
+            #prev_inzidenz_DAH = item['DAH'][1]
+            if last_update == '16.01.2021, 00:00 Uhr':
+                prev_inzidenz_DAH = 138.8
+            else:
+                prev_inzidenz_DAH = item['DAH'][1]
+
             break
 
     #print ("heute", round(float(inzidenz_dict['IN'][1])))
@@ -179,13 +196,15 @@ def retrieve_covid_data():
     diff_PAF = round(float(inzidenz_dict['PAF'][1]) - float(prev_inzidenz_PAF),2)
     diff_KEH = round(float(inzidenz_dict['KEH'][1]) - float(prev_inzidenz_KEH),2)
     diff_EI  = round(float(inzidenz_dict['EI'][1])  - float(prev_inzidenz_EI), 2)
+    diff_DAH  = round(float(inzidenz_dict['DAH'][1])  - float(prev_inzidenz_DAH), 2)
     #print (diff_IN)
     
     inzidenz_dict['IN'] = inzidenz_dict['IN'] + [diff_IN]
     inzidenz_dict['PAF'] = inzidenz_dict['PAF'] + [diff_PAF]
     inzidenz_dict['KEH'] = inzidenz_dict['KEH'] + [diff_KEH]
     inzidenz_dict['EI'] = inzidenz_dict['EI'] + [diff_EI]
-   
+    inzidenz_dict['DAH'] = inzidenz_dict['DAH'] + [diff_DAH]
+
     #fuer die RKI Zahlen 
     global fallzahlen_dict
     fallzahlen_dict = {}
@@ -452,7 +471,7 @@ def main():
     #plot_data(data)
     #upload_plot()
     html()
-    upload_html()
+    #upload_html()
 
 
 main()
