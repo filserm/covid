@@ -107,7 +107,7 @@ def retrieve_covid_data():
     data_IN = pd.DataFrame([])
     data_IN = pd.read_json(url_IN, lines=True)
 
-    global de_rki
+    global de_rki, de_rki_delta
     #data_rki = pd.DataFrame([])
     #data_rki = pd.read_json(rki_url, lines=True)
     s = requests.Session()
@@ -117,12 +117,13 @@ def retrieve_covid_data():
     #last_update_rki = data_rki['lastUpdate']
     last_update_rki = data_rki['meta']['lastUpdate']
     de_rki = data_rki['cases']
+    de_rki_delta = data_rki['delta']['cases']
 
     if data.empty:
         print ("API Germany is not responding ...")
         #data = ['no data']
     else:
-        #letzte Zeile dropen
+        #letzte Zeile dropenhttps://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20DACHAU%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=county,cases7_per_100k,last_update&returnGeometry=false&outSR=4326&f=json
         #data.drop(data.tail(1).index,inplace=True)
         data['datum'] = data['Date'].dt.strftime('%Y-%m-%d')
         data['DeltaConfirmed'] = data['Confirmed'].diff()
@@ -370,7 +371,7 @@ def html():
                                         padding: 10px;
                                         ">
                                     Neuinfektionen gg Vortag DE (RKI)
-                            <br><span>{diff_DE}</span><br></td></div></tr>
+                            <br><span>{de_rki_delta}</span><br></td></div></tr>
                             </td> 
                     
                               
