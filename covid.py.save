@@ -43,9 +43,8 @@ url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RK
 
 rki_url = 'https://api.corona-zahlen.org/germany'
 #rki_url = 'http://35.209.215.136:8080/germany'
-#vaccine_url = 'https://v2.rki.marlon-lueckert.de/vaccinations'
-vaccine_url = 'https://api.corona-zahlen.org/vaccinations'
-
+vaccine_url = 'https://v2.rki.marlon-lueckert.de/vaccinations'
+vaccine_url = '
 days = 14
 rolling_window_avg = 7
 now = dt.now() + timedelta(hours=1)
@@ -66,9 +65,9 @@ def retrieve_vaccine_data():
     last_update_vaccine      = str(last_update_vaccine)
     de_vaccine_total = vaccine['data']['vaccinated']
     de_vaccine_delta = vaccine['data']['delta']
-    by_vaccine_total = vaccine['data']['states']['BY']['vaccinated']
-    by_vaccine_delta = vaccine['data']['states']['BY']['delta']
-    last_checked = vaccine['data']['states']['BY']['delta']
+    by_vaccine_total = vaccine['data']['states']['Bayern*']['vaccinated']
+    by_vaccine_delta = vaccine['data']['states']['Bayern*']['delta']
+    last_checked = vaccine['data']['states']['Bayern*']['delta']
 
     de_vaccine_total = f'{de_vaccine_total:,}'
     de_vaccine_total = de_vaccine_total.replace(',','.')

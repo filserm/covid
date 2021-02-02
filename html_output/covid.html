@@ -12,10 +12,34 @@
     <link href='https://fonts.googleapis.com/css?family=Big Shoulders Stencil Text' rel='stylesheet'>
 <style> 
 
-body * {
-  font-family: Open Sans;
+
+html * {
+  
+
+  //background-image: linear-gradient(70deg, transparent 60%, rgba(90, 23, 56, 0.1)) !important;
+  background-color: #14141d !important;
 
 }
+ body * {
+  width: 100%;
+  font-family: Open Sans;
+}
+
+
+table tr td {
+    background-color: transparent;
+}
+
+.table1 {
+  table-layout: fixed !important;
+  margin-bottom: 0px !important;
+
+}
+
+.table2 {
+  margin-bottom: 0px !important;
+}
+
 img.arrow {
   width: 32px;
   height: 17px;
@@ -27,56 +51,88 @@ img.plot {
 }
 
 img.logo {
-  width: 100%;
-  height:45%;
+  /* width: 100%;
+  height:45%; */
+  width: 100px;
+  height: 100px;
+}
+
+img.flags {
+  /* width: 100%;
+  height:45%; */
+  width: 40px;
+  height: 40px;
 }
 
 td {
   vertical-align: middle !important;
+  /*text-align: center !important;*/
   font-weight: bold !important;
 } 
 
-td:nth-child(1) {
+
+tr:first-child th {
+  border-style:hidden !important;
+ 
+
+}
+
+.table1 tr:last-child td {
+  border-top: 0px !important;
+ border-left: 0px !important;
+ border-right: 0px !important;
+ border-style: dashed solid !important;
+}
+
+.table2 tr:last-child td {
+  border-style:hidden !important;
+}
+
+.table2 td:nth-child(1) {
+  padding-left: 15px !important;
+  text-align: left;
+  width: 15% !important;
+}
+
+.table2 td:nth-child(2) {
   padding: 0px !important;
+  text-align: left;
+  width: 25% !important;
 }
 
+.table2 td:nth-child(3) {
+  padding: 0px !important;
+  text-align: center;
+  width: 15% !important;
+  font-weight: bold !important;
+  font-stretch: expanded !important;
+  font-size: 124% !important;
+}
+.table2 td:nth-child(4) {
+  padding: 0px !important;
+  text-align: center;
+  width: 15% !important;
+}
 
-td:nth-child(5) {
-  width: 8px;
+.table2 td:nth-child(5) {
   text-align: right !important;
-  font-weight: bold;
- }
- td:nth-child(4) {
-  width: 12px;
-  align-content: center !important;
-   }
-td:nth-child(3) {
-  width: 12px;
-  align-content: center !important;
-  text-align:center !important;
+  align-items: center;
+  width: 15% !important;
+  /*padding-right: 15px !important;*/
+}
+.table2 td:nth-child(6) {
+  text-align: right !important;
+  align-items: center;
+  padding-right: 20px !important;
+  width: 15% !important;
 }
 
-#top, #bottom, #left, #right {
-	background: red;
-	position: fixed;
-	}
-	#left, #right {
-		top: 0; bottom: 0;
-		width: 7px;
-		}
-		#left { left: 0; }
-		#right { right: 0; }
-		
-	#top, #bottom {
-		left: 0; right: 0;
-		height: 7px;
-		}
-		#top { top: 0; }
-		#bottom { bottom: 0; }
+
 
 span {color: red;
     font-family: Big Shoulders Stencil Text;
     font-size: 26px;
+    background-color: lightgrey;
   }
 
 </style>
@@ -96,28 +152,70 @@ span {color: red;
 <div id="top"></div>
 <div id="bottom"></div> -->
 
-  <table class="table table-dark">
-  
-<thead>
-    <tr>
-        <!-- <tr><td colspan = 5 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona1.png" class="logo"></td>     -->
-          <tr><td colspan = 5 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona_christmas.jpeg" class="logo"></td>  
-    </tr>
-
-    <tr>
-      <th scope="col" style="vertical-align: middle">#</th>
-      <th scope="col" style="vertical-align: middle">Stadt/Landkreis</th>
-      <th scope="col" style="vertical-align: middle">7 Tage Inzidenz pro 100k Einwohner</th>
-      <th colspan = 2 scope="col" style="vertical-align: middle">Diff gg Vortag</th> 
-    </tr>
+<table class="table table-dark table1">
+  <thead>
+    
+                        
+                        <th colspan = 6 class="logo" style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/vaccine.svg" class="logo"></th> 
+                        <!-- <th colspan = 6 style="text-align:center; font-size: 62px;">💉</th> -->
+                        
+                        
+                        
   </thead>
   <tbody>
-      <tr><td class="align-middle">1</td><td>LK Eichstätt</td> <td style=color:white;background-color:#8B0000 important!;>  161,0</td><td class=font-effect-fire-animation style=text-align:right important!>    3,0 </td><td><img src="https://storage.googleapis.com/darkshadow-share/red_up.png" class="arrow"></td></tr><tr><td class="align-middle">2</td><td>LK Kelheim</td> <td style=color:white;background-color:#8B0000 important!;>  143,0</td><td style=text-align:right important!>   -3,2</td><td><img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow"></td></tr><tr><td class="align-middle">3</td><td>LK Pfaffenhofen a.d.Ilm</td> <td style=color:white;background-color:#8B0000 important!;>  134,9</td><td style=text-align:right important!>  -14,8</td><td><img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow"></td></tr><tr><td class="align-middle">4</td><td>SK Ingolstadt</td> <td style=color:white;background-color:#f00148 important!;>  73,51</td><td style=text-align:right important!> -22,56</td><td><img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow"></td></tr>
+    
+                        
+                        <tr>
+                            <td colspan = 2></td>
+                            <td class="logo" colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png" class="flags"> </td>
+                            <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png" class="flags"> </td>
+                        </tr>
+                        <tr>
+                            <td colspan = 2>Gesamt</td>
+                            <td colspan = 2 style="text-align:center">1.980.211</td>
+                            <td colspan = 2 style="text-align:center">331.825 </td>
+                        </tr>
+                        <tr> 
+                            <td colspan = 2>Diff gg Vortag</td>
+                            <td colspan = 2 style="text-align:center">38.074 </td>
+                            <td colspan = 2 style="text-align:center">6.964 </td>
+                        </tr>
+                        <tr>
+                            <td colspan =  6 style="font-size: 10px !important; text-align:right !important;">letzte Aktualisierung RKI 02.02.2021, 11:36 Uhr<br>letzter Check 02.02.2021, 18:00 Uhr</td>
+                           
+                            
+                        </tr>
+                      
+
+            
+                        
+  </tbody>
+</table>
+
+  <table class="table table-dark table2">
+  
+<thead>
+    
+        <th colspan = 6 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona.png" class="logo" </th> 
+          <!-- <tr><td colspan = 5 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona_christmas.jpeg" class="logo"></td>   -->
+    
+ </thead>
+
+ 
+  <tbody>
+    
+      <td>#</td>
+      <td>Stadt/Landkreis</td>
+      <td style="font-size: 100% !important;">7 Tage Inzidenz pro 100k Einwohner</td>
+      <td colspan=3>Diff gg Vortag</td> 
+  
+      <tr><td class="text-align:center;">1</td><td>LK Eichstätt</td> <td style="color:#f00148 !important;"><strong>  72,99</strong></td><td style=text-align:right important!>  -3,01</td><td colspan=2><img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow"></td></tr><tr><td class="text-align:center;">2</td><td>LK Dachau</td> <td style="color:#f00148 !important;"><strong>  72,30</strong></td><td style=text-align:right important!>  -2,58</td><td colspan=2><img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow"></td></tr><tr><td class="text-align:center;">3</td><td>LK Kelheim</td> <td style="color:#f00148 !important;"><strong>  69,88</strong></td><td style=text-align:right important!>  -5,69</td><td colspan=2><img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow"></td></tr><tr><td class="text-align:center;">4</td><td>SK Ingolstadt</td> <td style="color:#f00148 !important;"><strong>  53,13</strong></td><td style=text-align:right important!>  -0,73</td><td colspan=2><img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow"></td></tr><tr><td class="text-align:center;">5</td><td>LK Pfaffenhofen a.d.Ilm</td> <td style="color:orange !important;"><strong>  37,43</strong></td><td class=font-effect-fire-animation style=text-align:right important!>   2,34 </td><td colspan=2><img src="https://storage.googleapis.com/darkshadow-share/red_up.png" class="arrow"></td></tr>
       
                    
-                    <tr><td colspan = 5  style=text-align:center important!;">
+                    <tr><td colspan = 6 style=text-align:center important!;">
                             <div style="font-size: 18px !important;
-                                        color:black;
+                                        
+                                        color: white;
                                         background-color: lightgrey;
                                         margin-top: 7px;
                                         margin-bottom: 7px;
@@ -130,16 +228,18 @@ span {color: red;
                                         padding: 10px;
                                         ">
                                     Neuinfektionen gg Vortag DE (RKI)
-                            <br><span>12.690</span><br></td></div></tr>
+                            <br><span>6114</span><br></td></div></tr>
                             </td> 
                     
                               
                     
-      <tr><td colspan = 2 >Letzte Aktualisierung</td> <td colspan=3>02.01.2021, 00:00 Uhr</td></tr>
+      <tr><td colspan = 6 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung RKI 02.02.2021, 00:00 Uhr</td></tr> 
       
-      <tr><td colspan = 5><img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot"></td></tr>
+      <!-- <tr><td colspan = 5><img src="https://storage.googleapis.com/darkshadow-share/plot.png" class="plot"></td></tr> -->
   </tbody>
 </table>
   
+    
+
 </body>
 </html>
