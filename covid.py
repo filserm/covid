@@ -412,8 +412,8 @@ def html():
                         </tr>
                         <tr>
                             <td colspan = 2>Gesamt<p> </p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<p>{vaccine_dict['DE'][2]}</p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]}<p>{vaccine_dict['BY'][2]}</p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<br><p>{vaccine_dict['DE'][2]}</p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]}<br><p>{vaccine_dict['BY'][2]}</p></td>
                         </tr>
                         <tr> 
                             <td colspan = 2>Diff gg Vortag</td>
