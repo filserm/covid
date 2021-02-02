@@ -62,12 +62,14 @@ def retrieve_vaccine_data():
     last_update_vaccine      = dateutil.parser.parse(last_update_vaccine)
     last_update_vaccine_formated = last_update_vaccine.strftime("%d.%m.%Y, %H:%M Uhr")
     print (last_update_vaccine_formated)
-    
+
     last_update_vaccine      = str(last_update_vaccine)
     de_vaccine_total = vaccine['data']['vaccinated']
     de_vaccine_delta = vaccine['data']['delta']
+    de_vaccine_quote = vaccine['data']['quote']
     by_vaccine_total = vaccine['data']['states']['BY']['vaccinated']
     by_vaccine_delta = vaccine['data']['states']['BY']['delta']
+    by_vaccine_quote = vaccine['data']['states']['BY']['quote']
     last_checked = vaccine['data']['states']['BY']['delta']
 
     de_vaccine_total = f'{de_vaccine_total:,}'
@@ -82,11 +84,17 @@ def retrieve_vaccine_data():
     by_vaccine_delta = f'{by_vaccine_delta:,}'
     by_vaccine_delta = by_vaccine_delta.replace(',','.')
 
+    de_vaccine_quote = de_vaccine_quote * 100.00
+    de_vaccine_quote = format(de_vaccine_quote, '.2f').replace('.',',')+'%'
+    
+    by_vaccine_quote = by_vaccine_quote * 100.00
+    by_vaccine_quote = format(by_vaccine_quote, '.2f').replace('.',',')+'%'
+
     #print (last_update, de_vaccine_total, de_vaccine_delta, by_vaccine_total, by_vaccine_delta)
     global vaccine_dict
     vaccine_dict = {}
-    vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta]
-    vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta]
+    vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta, de_vaccine_quote]
+    vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta, by_vaccine_quote]
 
     path = os.path.join(os.path.expanduser("~/covid/"), 'vaccine_db')
     with shelve.open(path) as db:
@@ -403,9 +411,9 @@ def html():
                             <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png" class="flags"> </td>
                         </tr>
                         <tr>
-                            <td colspan = 2>Gesamt</td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}</td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]} </td>
+                            <td colspan = 2>Gesamt<p> </p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<p>{vaccine_dict['DE'][2]}</p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]}<p>{vaccine_dict['BY'][2]}</p></td>
                         </tr>
                         <tr> 
                             <td colspan = 2>Diff gg Vortag</td>
