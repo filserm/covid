@@ -48,7 +48,7 @@ vaccine_url = 'https://api.corona-zahlen.org/vaccinations'
 
 days = 14
 rolling_window_avg = 7
-now = dt.now() + timedelta(hours=1)
+now = dt.now()
 
 now = now.strftime("%d.%m.%Y, %H:%M Uhr") 
 
