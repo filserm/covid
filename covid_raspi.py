@@ -403,7 +403,7 @@ def html():
         if item.find('##VACCINE_HEADER##') >0:
             item = item.replace('##VACCINE_HEADER##' ,f"""
                         
-                        <th colspan = 6 class="logo" style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/vaccine.svg" class="logo"></th> 
+                        <th colspan = 6 class="logo" style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/vaccine.svg" class="logo"></th> 
                         <!-- <th colspan = 6 style="text-align:center; font-size: 62px;">{smiley}</th> -->
                         
                         
@@ -452,11 +452,11 @@ class Inzidenz():
     def htmlcode(self):
         #print (self.county, self.inzidenz, self.last_update)
         if self.inzidenz_vortag > 0:
-            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/red_up.png" class="arrow">'
+            add_arrow = '<img src="https://f003.backblazeb2.com/file/coviddata/red_up.png" class="arrow">'
             arrow = "up"
             effect = 'font-effect-fire-animation'
         elif self.inzidenz_vortag < 0:
-            add_arrow = '<img src="https://storage.googleapis.com/darkshadow-share/green_down.png" class="arrow">'
+            add_arrow = '<img src="https://f003.backblazeb2.com/file/coviddata/green_down.png" class="arrow">'
             arrow = "down"
             effect = ''
         elif self.inzidenz_vortag == 0:
