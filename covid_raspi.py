@@ -72,6 +72,14 @@ def retrieve_vaccine_data():
     by_vaccine_quote = vaccine['data']['states']['BY']['quote']
     last_checked = vaccine['data']['states']['BY']['delta']
 
+    de_vaccine_second_total = vaccine['data']['secondVaccination']['vaccinated']
+    de_vaccine_second_delta = vaccine['data']['secondVaccination']['delta']
+    de_vaccine_second_quote = vaccine['data']['secondVaccination']['quote']
+
+    by_vaccine_second_total = vaccine['data']['states']['BY']['secondVaccination']['vaccinated']
+    by_vaccine_second_delta = vaccine['data']['states']['BY']['secondVaccination']['delta']
+    by_vaccine_second_quote = vaccine['data']['states']['BY']['secondVaccination']['quote']
+
     de_vaccine_total = f'{de_vaccine_total:,}'
     de_vaccine_total = de_vaccine_total.replace(',','.')
 
@@ -90,11 +98,31 @@ def retrieve_vaccine_data():
     by_vaccine_quote = by_vaccine_quote * 100.00
     by_vaccine_quote = format(by_vaccine_quote, '.2f').replace('.',',')+'%'
 
+
+    de_vaccine_second_total = f'{de_vaccine_second_total:,}'
+    de_vaccine_second_total = de_vaccine_second_total.replace(',','.')
+
+    de_vaccine_second_delta = f'{de_vaccine_second_delta:,}'
+    de_vaccine_second_delta = de_vaccine_second_delta.replace(',','.')
+    
+    de_vaccine_second_quote = de_vaccine_second_quote * 100.00
+    de_vaccine_second_quote = format(de_vaccine_second_quote, '.2f').replace('.',',')+'%'
+
+
+    by_vaccine_second_total = f'{by_vaccine_second_total:,}'
+    by_vaccine_second_total = by_vaccine_second_total.replace(',','.')
+
+    by_vaccine_second_delta = f'{by_vaccine_second_delta:,}'
+    by_vaccine_second_delta = by_vaccine_second_delta.replace(',','.')
+    
+    by_vaccine_second_quote = by_vaccine_second_quote * 100.00
+    by_vaccine_second_quote = format(by_vaccine_second_quote, '.2f').replace('.',',')+'%'
+
     #print (last_update, de_vaccine_total, de_vaccine_delta, by_vaccine_total, by_vaccine_delta)
     global vaccine_dict
     vaccine_dict = {}
-    vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta, de_vaccine_quote]
-    vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta, by_vaccine_quote]
+    vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta, de_vaccine_quote, de_vaccine_second_total, de_vaccine_second_delta, de_vaccine_second_quote]
+    vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta, by_vaccine_quote, by_vaccine_second_total, by_vaccine_second_delta, by_vaccine_second_quote]
 
     path = os.path.join(os.path.expanduser("~/covid/"), 'vaccine_db')
     with shelve.open(path) as db:
@@ -106,7 +134,6 @@ def retrieve_vaccine_data():
         #print ("Datum", k, "item", item)
         vaccine_record =  item
         print (k, vaccine_record)
-
     
 
 def retrieve_covid_data():
@@ -418,15 +445,15 @@ def html():
                             <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png" class="flags"> </td>
                         </tr>
                         <tr>
-                            <td colspan = 2>Gesamt<p> </p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<br><p>{vaccine_dict['DE'][2]}</p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]}<br><p>{vaccine_dict['BY'][2]}</p></td>
+                            <td colspan = 2>Erstimpfung<p> </p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<br><p1> +{vaccine_dict['DE'][1]}</p><br><p>{vaccine_dict['DE'][2]}</p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]}<br><p1> +{vaccine_dict['BY'][1]}</p><br><p>{vaccine_dict['BY'][2]}</p></td>
                         </tr>
-                        <tr> 
-                            <td colspan = 2>Diff gg Vortag</td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][1]} </td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][1]} </td>
-                        </tr>
+                        <tr>
+                            <td colspan = 2>Zweitimpfung<p> </p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][3]}<br><p1> +{vaccine_dict['DE'][4]}</p><br><p>{vaccine_dict['DE'][5]}</p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][3]}<br><p1> +{vaccine_dict['BY'][4]}</p><br><p>{vaccine_dict['BY'][5]}</p></td>
+                        </tr>>
                         <tr>
                             <td colspan =  6 style="font-size: 10px !important; text-align:right !important;">letzte Aktualisierung RKI {last_update_vaccine_formated}<br>letzter Check {now}</td>
                            
