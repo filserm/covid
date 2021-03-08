@@ -442,7 +442,8 @@ def html():
                         <tr>
                             <td colspan = 2></td>
                             <td class="logo" colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png" class="flags"> </td>
-                            <td colspan = 2 style="text-align:center"><img src="https://img.icons8.com/color/50/000000/bavarian-flag.png" class="flags"> </td>
+                            <td colspan = 2 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/bavaria.png" class="flags1"> </td>
+                            
                         </tr>
                         <tr>
                             <td colspan = 2>Erstimpfung<p> </p></td>
@@ -517,7 +518,7 @@ def main():
     #upload_plot()
     html()
     #upload_html() #gcp bucket
-    upload_html_b2() #backblaze bucket
+    #upload_html_b2() #backblaze bucket
 
 
 main()
