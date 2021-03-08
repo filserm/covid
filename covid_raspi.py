@@ -430,21 +430,15 @@ def html():
         if item.find('##VACCINE_HEADER##') >0:
             item = item.replace('##VACCINE_HEADER##' ,f"""
                         
-                        <th colspan = 6 class="logo" style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/vaccine.svg" class="logo"></th> 
-                        <!-- <th colspan = 6 style="text-align:center; font-size: 62px;">{smiley}</th> -->
-                        
+                        <th colspan = 2></th>
+                        <th class="logo" colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png" class="flags"> </th>
+                        <th colspan = 2 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/bavaria.png" class="flags1"> </th>
                         
                         """)
 
         if item.find('##VACCINE##') >0:
             item = item.replace('##VACCINE##' ,f"""
-                        
-                        <tr>
-                            <td colspan = 2></td>
-                            <td class="logo" colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png" class="flags"> </td>
-                            <td colspan = 2 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/bavaria.png" class="flags1"> </td>
-                            
-                        </tr>
+                    
                         <tr>
                             <td colspan = 2>Erstimpfung<p> </p></td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<br><p1> +{vaccine_dict['DE'][1]}</p><br><p>{vaccine_dict['DE'][2]}</p></td>
