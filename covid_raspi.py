@@ -52,6 +52,15 @@ now = dt.now()
 
 now = now.strftime("%d.%m.%Y, %H:%M Uhr") 
 
+wappen = {
+            'IN': 'https://f003.backblazeb2.com/file/coviddata/Ingolstadt.png' ,
+            'PAF': 'https://f003.backblazeb2.com/file/coviddata/pfaffenhofen..png' ,
+            'DAH': 'https://f003.backblazeb2.com/file/coviddata/dachau.png' ,
+            'KEH': 'https://f003.backblazeb2.com/file/coviddata/kelheim.png' ,
+            'EI': 'https://f003.backblazeb2.com/file/coviddata/eichstaett.png' ,
+
+}
+
 def retrieve_vaccine_data():
     global vaccine_record, last_update_vaccine_formated
 
@@ -380,7 +389,9 @@ def html():
         if item.find('##COVID_DATA##') > 0:
             for k, v in sorted(inzidenz_dict.items(), key=lambda x: float(x[1][1]), reverse=True):
                 add_line.append('<tr>')
-                add_line.append(f'<td class="text-align:center;">{i}</td>')
+                #add_line.append(f'<td class="text-align:center;">{i}</td>')               
+                add_line.append(f'<td colspan = 1 style="text-align:center"><img src={wappen[k]} class="wappen"></td>')
+
                 county = inzidenz_dict[k][0]
                 inzidenz = inzidenz_dict[k][1]
                 inzidenz_vortag = inzidenz_dict[k][3]
@@ -473,6 +484,7 @@ class Inzidenz():
 
     def htmlcode(self):
         #print (self.county, self.inzidenz, self.last_update)
+        #self.inzidenz_vortag = -10
         if self.inzidenz_vortag > 0:
             add_arrow = '<img src="https://f003.backblazeb2.com/file/coviddata/red_up.png" class="arrow">'
             arrow = "up"
@@ -480,6 +492,7 @@ class Inzidenz():
         elif self.inzidenz_vortag < 0:
             add_arrow = '<img src="https://f003.backblazeb2.com/file/coviddata/green_down.png" class="arrow">'
             arrow = "down"
+            #color_gn = '#56f86b'
             effect = ''
         elif self.inzidenz_vortag == 0:
             add_arrow = ''
@@ -501,8 +514,11 @@ class Inzidenz():
 
         if arrow == "up":
             return f'<td>{self.county}</td> <td style="color:{color} !important;"><strong>{self.inzidenz_out}</strong></td><td class={effect} style=text-align:right important!>{self.inzidenz_vortag_out} </td><td colspan=2>{add_arrow}</td>'
+            #return f'<td>{self.county}</td> <td style="color:{color} !important;"><strong>{self.inzidenz_out}</strong></td><td colspan=2 class={effect} style=text-align:center important!>+ {self.inzidenz_vortag_out} </td>'
+        
         elif arrow == "down":
             return f'<td>{self.county}</td> <td style="color:{color} !important;"><strong>{self.inzidenz_out}</strong></td><td style=text-align:right important!>{self.inzidenz_vortag_out}</td><td colspan=2>{add_arrow}</td>'
+            #return f'<td>{self.county}</td> <td style="color:{color} !important;"><strong>{self.inzidenz_out}</strong></td><td colspan=2 style="color:{color_gn} !important; text-align:center important!">- {self.inzidenz_vortag_out} </td>'
 
 
 def main():
@@ -512,7 +528,7 @@ def main():
     #upload_plot()
     html()
     #upload_html() #gcp bucket
-    upload_html_b2() #backblaze bucket
+    #upload_html_b2() #backblaze bucket
 
 
 main()
