@@ -528,7 +528,7 @@ def main():
     #upload_plot()
     html()
     #upload_html() #gcp bucket
-    #upload_html_b2() #backblaze bucket
+    upload_html_b2() #backblaze bucket
 
 
 main()
