@@ -70,7 +70,7 @@ def retrieve_vaccine_data():
     last_update_vaccine      = vaccine['meta']['lastUpdate']
     last_update_vaccine      = dateutil.parser.parse(last_update_vaccine)
     last_update_vaccine_formated = last_update_vaccine.strftime("%d.%m.%Y, %H:%M Uhr")
-    print (last_update_vaccine_formated)
+    #print (last_update_vaccine_formated)
 
     last_update_vaccine      = str(last_update_vaccine)
     de_vaccine_total = vaccine['data']['vaccinated']
@@ -142,7 +142,7 @@ def retrieve_vaccine_data():
     for k, item in sorted(vaccineDB.items(), key=lambda x: (dt.strptime(x[0][:10], '%Y-%m-%d')), reverse=True):
         #print ("Datum", k, "item", item)
         vaccine_record =  item
-        print (k, vaccine_record)
+        #print (k, vaccine_record)
     
 
 def retrieve_covid_data():
@@ -180,23 +180,23 @@ def retrieve_covid_data():
     global inzidenz_dict
     inzidenz_dict = {}
     ingo = pd.Series(data_IN['features']) 
-    data_IN['countyIN'] = ingo.iloc[0][0]['attributes']['county']
+    data_IN['countyIN'] = ingo.iloc[0][0]['attributes']['county'][3:]
     data_IN['last_updateIN'] = ingo.iloc[0][0]['attributes']['last_update']
     data_IN['cases7_per_100kIN'] = ingo.iloc[0][0]['attributes']['cases7_per_100k']
 
-    data_IN['countyPAF'] = ingo.iloc[0][1]['attributes']['county']
+    data_IN['countyPAF'] = ingo.iloc[0][1]['attributes']['county'][3:]
     data_IN['last_updatePAF'] = ingo.iloc[0][1]['attributes']['last_update']
     data_IN['cases7_per_100kPAF'] = ingo.iloc[0][1]['attributes']['cases7_per_100k']
 
-    data_IN['countyKEH'] = ingo.iloc[0][2]['attributes']['county']
+    data_IN['countyKEH'] = ingo.iloc[0][2]['attributes']['county'][3:]
     data_IN['last_updateKEH'] = ingo.iloc[0][2]['attributes']['last_update']
     data_IN['cases7_per_100kKEH'] = ingo.iloc[0][2]['attributes']['cases7_per_100k']
 
-    data_IN['countyEI'] = ingo.iloc[0][3]['attributes']['county']
+    data_IN['countyEI'] = ingo.iloc[0][3]['attributes']['county'][3:]
     data_IN['last_updateEI'] = ingo.iloc[0][3]['attributes']['last_update']
     data_IN['cases7_per_100kEI'] = ingo.iloc[0][3]['attributes']['cases7_per_100k']
 
-    data_IN['countyDAH'] = ingo.iloc[0][4]['attributes']['county']
+    data_IN['countyDAH'] = ingo.iloc[0][4]['attributes']['county'][3:]
     data_IN['last_updateDAH'] = ingo.iloc[0][4]['attributes']['last_update']
     data_IN['cases7_per_100kDAH'] = ingo.iloc[0][4]['attributes']['cases7_per_100k']
 
@@ -264,7 +264,7 @@ def retrieve_covid_data():
        
     prev_fallzahl = shelve.open(path)
     for k, item in sorted(prev_fallzahl.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
-        print ("Datum", k, "last_update", last_update)
+        #print ("Datum", k, "last_update", last_update)
         if k != last_update:
             print ("asf")
             prev_fallzahl_DE = item['DE'][1]
@@ -528,7 +528,7 @@ def main():
     #upload_plot()
     html()
     #upload_html() #gcp bucket
-    upload_html_b2() #backblaze bucket
+    #upload_html_b2() #backblaze bucket
 
 
 main()
