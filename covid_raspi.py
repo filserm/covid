@@ -605,8 +605,8 @@ def main():
     retrieve_vaccine_data()
     
     html()
-    #upload_html() #gcp bucket
-    #upload_html_b2() #backblaze bucket
+    upload_html() #gcp bucket
+    upload_html_b2() #backblaze bucket
 
 
 main()
