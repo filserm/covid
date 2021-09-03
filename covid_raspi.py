@@ -612,7 +612,7 @@ def main():
     
     html()
     
-    #upload_html_b2() #backblaze bucket
+    upload_html_b2() #backblaze bucket
 
 
 main()
