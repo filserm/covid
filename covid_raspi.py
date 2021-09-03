@@ -17,7 +17,7 @@ import ssl
 import dateutil.parser
 from b2blaze import B2
 #set environment variables B2_KEY_ID and B2_APPLICATION_KEY
-
+from bs4 import BeautifulSoup #pip install beautifulsoup4
 
 ssl._create_default_https_context = ssl._create_unverified_context
 #, cafile="/vagrant/certs/selfsigned.crt"
@@ -60,6 +60,32 @@ wappen = {
             'EI': 'https://f003.backblazeb2.com/file/coviddata/eichstaett.png' ,
 
 }
+
+def get_hospitalisierung():
+    global hosp, hosp_inz, intensiv, last_update_kh
+    data = []
+    stand = []
+    url = 'https://www.lgl.bayern.de/gesundheit/infektionsschutz/infektionskrankheiten_a_z/coronavirus/karte_coronavirus/index.htm#kennzahlen'
+    req = requests.get(url)
+    html = BeautifulSoup(req.content, 'html.parser')
+    #print(soup.prettify())
+    data.append (html.find_all("td"))
+    stand.append(html.find_all("span"))
+    hosp = data[0][1]
+    hosp_inz = data[0][3]
+    intensiv = data[0][5]
+
+    last_update_kh = str(stand[0][6])
+
+    print (last_update_kh)
+
+    index = last_update_kh.index('>')
+    last_update_kh = last_update_kh[index+1:]
+    index = last_update_kh.index('<')
+    last_update_kh = last_update_kh[:index] + ' Uhr'
+    print (last_update_kh)
+    #exit()
+
 
 def retrieve_vaccine_data():
     global vaccine_record, last_update_vaccine_formated
@@ -373,8 +399,10 @@ def upload_html_b2():
    
 
 def html():
+
+    print ("hospi:", hosp, "intensiv", intensiv)
     
-    add_line=[]
+    add_line, new_line_hosp =  [], []
     i = 1
     html_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'covid_html_template.html')
     html_template_file = open(html_template, 'r')
@@ -386,89 +414,109 @@ def html():
     htmlfile = open (html_filename, 'w')
 
     for item in html_code:
-        if item.find('##COVID_DATA##') > 0:
-            for k, v in sorted(inzidenz_dict.items(), key=lambda x: float(x[1][1]), reverse=True):
-                add_line.append('<tr>')
-                #add_line.append(f'<td class="text-align:center;">{i}</td>')               
-                add_line.append(f'<td colspan = 1 style="text-align:center"><img src={wappen[k]} class="wappen"></td>')
+        if item.find('##HOSPITALISIERUNG##') > 0:
+            new_line_hosp.append(f'''
+            <tr>
+                <td style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/hospital.png" class="kh_logo"></td>
+                <td colspan = 4 style="font-size: 10px !important;">Neuaufnahme KH letzte 7 Tage</td>
+                {hosp}
+                <td colspan = 2 style="font-size: 10px !important; text-align: right"> <p>ab 1.200 </p> <img src="https://f003.backblazeb2.com/file/coviddata/gelb.png" class="lights"><td>
+            </tr>     
+            <tr>
+                <td style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
+                <td colspan = 4 style="font-size: 10px !important;">Patienten auf Intensivstation</td>                
+                {intensiv} 
+                <td colspan = 2 style="font-size: 10px !important; text-align:right"> <p>ab 600 </p><img src="https://f003.backblazeb2.com/file/coviddata/red.png" class="lights"></td>
+            </tr>            
+            ''')
 
-                county = inzidenz_dict[k][0]
-                inzidenz = inzidenz_dict[k][1]
-                inzidenz_vortag = inzidenz_dict[k][3]
-                last_update = inzidenz_dict[k][2]
-                new_inzidenz_obj = Inzidenz(county, inzidenz, inzidenz_vortag, last_update)
-                new_line = new_inzidenz_obj.htmlcode()
-                add_line.append(new_line)     
-                add_line.append('</tr>')     
-                i+=1
-            new_line = ''.join(add_line)
-            #print (new_line, "\n")
+            new_line_hosp.append(f'<tr><td colspan = 8 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung {last_update_kh}</td></tr>')
 
-            item = item.replace('##COVID_DATA##', new_line)
-        if item.find('##RKI##') >0:
+            new_line = ''.join(new_line_hosp)
+            item = item.replace('##HOSPITALISIERUNG##', new_line)
+             
+
+        # if item.find('##COVID_DATA##') > 0:
+        #     for k, v in sorted(inzidenz_dict.items(), key=lambda x: float(x[1][1]), reverse=True):
+        #         add_line.append('<tr>')
+        #         #add_line.append(f'<td class="text-align:center;">{i}</td>')               
+        #         add_line.append(f'<td colspan = 1 style="text-align:center"><img src={wappen[k]} class="wappen"></td>')
+
+        #         county = inzidenz_dict[k][0]
+        #         inzidenz = inzidenz_dict[k][1]
+        #         inzidenz_vortag = inzidenz_dict[k][3]
+        #         last_update = inzidenz_dict[k][2]
+        #         new_inzidenz_obj = Inzidenz(county, inzidenz, inzidenz_vortag, last_update)
+        #         new_line = new_inzidenz_obj.htmlcode()
+        #         add_line.append(new_line)     
+        #         add_line.append('</tr>')     
+        #         i+=1
+        #     new_line = ''.join(add_line)
+        #     #print (new_line, "\n")
+
+        #     item = item.replace('##COVID_DATA##', new_line)
+        # if item.find('##RKI##') >0:
             
-            item = item.replace('##RKI##' , f'''
+        #     item = item.replace('##RKI##' , f'''
                    
-                    <tr><td colspan = 6 style=text-align:center important!;">
-                            <div style="font-size: 18px !important;
+        #             <tr><td colspan = 6 style=text-align:center important!;">
+        #                     <div style="font-size: 18px !important;
                                         
-                                        color: white;
-                                        background-color: lightgrey;
-                                        margin-top: 7px;
-                                        margin-bottom: 7px;
-                                        margin-left: 20px;
-                                        margin-right: 20px;
-                                        width:auto;
-                                        height:90px; 
-                                        border-style: ridge; 
-                                        border-color: red;
-                                        padding: 10px;
-                                        ">
-                                    Neuinfektionen gg Vortag DE (RKI)
-                            <br><span>{de_rki_delta}</span><br></td></div></tr>
-                            </td> 
+        #                                 color: white;
+        #                                 background-color: lightgrey;
+        #                                 margin-top: 7px;
+        #                                 margin-bottom: 7px;
+        #                                 margin-left: 20px;
+        #                                 margin-right: 20px;
+        #                                 width:auto;
+        #                                 height:90px; 
+        #                                 border-style: ridge; 
+        #                                 border-color: red;
+        #                                 padding: 10px;
+        #                                 ">
+        #                             Neuinfektionen gg Vortag DE (RKI)
+        #                     <br><span>{de_rki_delta}</span><br></td></div></tr>
+        #                     </td> 
                     
                               
-                    '''
-                    )
-            #item = item.replace('##RKI##' , f'<tr><td colspan = 2 class="text-primary">Neuinfektionen DE (RKI):  {diff_DE}</td></tr>')
-            
+        #             '''
+        #             )
+           
        
-        if item.find('##LAST_UPDATE##') > 0:
-            item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 6 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung RKI {last_update}</td></tr>')
-            #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
+        # if item.find('##LAST_UPDATE##') > 0:
+        #     item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 6 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung RKI {last_update}</td></tr>')
         
-        if item.find('##VACCINE_HEADER##') >0:
-            item = item.replace('##VACCINE_HEADER##' ,f"""
+        # if item.find('##VACCINE_HEADER##') >0:
+        #     item = item.replace('##VACCINE_HEADER##' ,f"""
                         
-                        <th colspan = 2></th>
-                        <th class="logo" colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png" class="flags"> </th>
-                        <th colspan = 2 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/bavaria.png" class="flags1"> </th>
+        #                 <th colspan = 2></th>
+        #                 <th class="logo" colspan = 2 style="text-align:center"><img src="https://img.icons8.com/emoji/48/000000/germany-emoji.png" class="flags"> </th>
+        #                 <th colspan = 2 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/bavaria.png" class="flags1"> </th>
                         
-                        """)
+        #                 """)
 
-        if item.find('##VACCINE##') >0:
-            item = item.replace('##VACCINE##' ,f"""
+        # if item.find('##VACCINE##') >0:
+        #     item = item.replace('##VACCINE##' ,f"""
                     
-                        <tr>
-                            <td colspan = 2>Erstimpfung<p> </p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<br><p1> +{vaccine_dict['DE'][1]}</p><br><p>{vaccine_dict['DE'][2]}</p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]}<br><p1> +{vaccine_dict['BY'][1]}</p><br><p>{vaccine_dict['BY'][2]}</p></td>
-                        </tr>
-                        <tr>
-                            <td colspan = 2>Zweitimpfung<p> </p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][3]}<br><p1> +{vaccine_dict['DE'][4]}</p><br><p>{vaccine_dict['DE'][5]}</p></td>
-                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][3]}<br><p1> +{vaccine_dict['BY'][4]}</p><br><p>{vaccine_dict['BY'][5]}</p></td>
-                        </tr>>
-                        <tr>
-                            <td colspan =  6 style="font-size: 10px !important; text-align:right !important;">letzte Aktualisierung RKI {last_update_vaccine_formated}<br>letzter Check {now}</td>
+        #                 <tr>
+        #                     <td colspan = 2>Erstimpfung<p> </p></td>
+        #                     <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][0]}<br><p1> +{vaccine_dict['DE'][1]}</p><br><p>{vaccine_dict['DE'][2]}</p></td>
+        #                     <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][0]}<br><p1> +{vaccine_dict['BY'][1]}</p><br><p>{vaccine_dict['BY'][2]}</p></td>
+        #                 </tr>
+        #                 <tr>
+        #                     <td colspan = 2>Zweitimpfung<p> </p></td>
+        #                     <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][3]}<br><p1> +{vaccine_dict['DE'][4]}</p><br><p>{vaccine_dict['DE'][5]}</p></td>
+        #                     <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][3]}<br><p1> +{vaccine_dict['BY'][4]}</p><br><p>{vaccine_dict['BY'][5]}</p></td>
+        #                 </tr>>
+        #                 <tr>
+        #                     <td colspan =  6 style="font-size: 10px !important; text-align:right !important;">letzte Aktualisierung RKI {last_update_vaccine_formated}<br>letzter Check {now}</td>
                            
                             
-                        </tr>
+        #                 </tr>
                       
 
             
-                        """)
+        #                 """)
        
         htmlfile.write(item)
     htmlfile.close()
@@ -522,10 +570,10 @@ class Inzidenz():
 
 
 def main():
-    data = retrieve_covid_data()
-    retrieve_vaccine_data()
-    #plot_data(data)
-    #upload_plot()
+    get_hospitalisierung()
+    #data = retrieve_covid_data()
+    #retrieve_vaccine_data()
+    
     html()
     #upload_html() #gcp bucket
     #upload_html_b2() #backblaze bucket
