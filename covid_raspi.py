@@ -449,15 +449,14 @@ def html():
                 text_color_intensiv = green
 
             new_line_hosp.append(f'''
-            <tr> 
-                <td colspan = 11 style="text-align:left; font-size: 15px;">Coronavirus-Infektionszahlen Bayern </td>
-                <td colspan = 2> <img src="https://f003.backblazeb2.com/file/coviddata/bavaria.png" class="flags2"> </td>
-            </tr>
+           
+                <td colspan = 13 style="text-align:left; font-size: 15px;">Coronavirus-Infektionszahlen Bayern </td>
+            
             <tr>
                 <td colspan = 2 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/hospital.png" class="kh_logo"></td>
                 <td colspan = 5 style="font-size: 14px !important;">  Neuaufnahmen Krankenhaus (letzte 7 Tage)</td>
                 <td colspan = 2 style="text-align: center; font-size: 20px; color:{text_color_hosp}">{hosp}</td>
-                <td colspan = 4 style="font-size: 17px !important; text-align: right"> <p>> 1.200  </p> <img src="https://f003.backblazeb2.com/file/coviddata/gelb.png" class="lights"><td>
+                <td colspan = 4 style="font-size: 17px !important; text-align: right"> <p>> 1.200  </p> <img src="https://f003.backblazeb2.com/file/coviddata/yellow.png" class="lights"><td>
             </tr>     
             <tr>
                 <td colspan = 2 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
