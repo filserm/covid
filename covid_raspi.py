@@ -87,7 +87,7 @@ def get_hospitalisierung():
         intensiv = intensiv[index+1:]
         index = intensiv.index('<')
         intensiv = intensiv[:index]
-        hosp
+        print (hosp)
 
         last_update_kh = str(stand[0][6])
 
@@ -98,11 +98,12 @@ def get_hospitalisierung():
         index = last_update_kh.index('<')
         last_update_kh = last_update_kh[:index] + ' Uhr'
         print (last_update_kh)
-        #exit()
+        
     except Exception as error:
         hosp = "n/a"
         intensiv = "n/a"
         last_update_kh = "n/a"
+
 
 
 def retrieve_vaccine_data():
