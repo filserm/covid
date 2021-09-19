@@ -76,7 +76,7 @@ def get_hospitalisierung():
         
         hosp = str(data[0][1])
         hosp_inz = str(data[0][3])
-        intensiv = str(data[0][5])
+        intensiv = str(data[0][13])
 
         index = hosp.index('>')
         hosp = hosp[index+1:]
