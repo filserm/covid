@@ -72,7 +72,7 @@ def get_hospitalisierung():
         html = BeautifulSoup(req.content, 'html.parser')
         #print(soup.prettify())
         data.append (html.find_all("td"))
-        stand.append(html.find_all("span"))
+        stand.append(html.find_all("p"))
         
         hosp = str(data[0][1])
         hosp_inz = str(data[0][3])
@@ -89,15 +89,15 @@ def get_hospitalisierung():
         intensiv = intensiv[:index]
         print (hosp)
 
-        last_update_kh = str(stand[0][6])
+        last_update_kh = str(stand[0][8])
 
         print (last_update_kh)
 
-        index = last_update_kh.index('>')
-        last_update_kh = last_update_kh[index+1:]
+        index = last_update_kh.index('Stand: ')
+        last_update_kh = last_update_kh[index+6:]
         index = last_update_kh.index('<')
-        last_update_kh = last_update_kh[:index] + ' Uhr'
-        print (last_update_kh)
+        last_update_kh = last_update_kh[:index-1]
+        print ("last update: ", last_update_kh)
         
     except Exception as error:
         hosp = "n/a"
