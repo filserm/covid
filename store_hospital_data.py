@@ -67,26 +67,26 @@ def get_hospitalisierung():
                 "last_update": last_update_kh
         }
 
-        return data
+        return data, last_update_kh
         
     except Exception as error:
         hosp = "n/a"
         intensiv = "n/a"
         last_update_kh = "n/a"
-        print ("bla")
 
-def check_mongo():
-    print ("today", today)
-    x = mongodb.collection.find({ 'last_update': {"$eq": today }})
-    if list(x) != []:
-        print ("data already available")
-        exit()
+def check_mongo(last_update_kh):
+    last_update_saved = mongodb.collection.find_one({"last_update": {"$exists": True}}, sort=[("last_update", 1)])["last_update"]
+    print ("last update saved", last_update_saved, "last_update_kh", last_update_kh)
+    if last_update_saved != last_update_kh:
+        return        
     else:
-        return
+        print ("data already available or not available till now")
+        exit()
+        
 
 def main():
-    check_mongo()
-    data = get_hospitalisierung()
+    data, last_update_kh = get_hospitalisierung()
+    check_mongo(last_update_kh)
     insert_mongo_db_document(data)
 
 main()
