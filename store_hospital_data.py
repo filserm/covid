@@ -76,7 +76,8 @@ def get_hospitalisierung():
 
 def check_mongo(last_update_kh):
     try:
-        last_update_saved = mongodb.collection.find_one({"date": {"$exists": True}}, sort=[("date", 1)])["date"]
+        last_update_saved = mongodb.collection.find_one({"date": {"$exists": True}}, sort=[("date", -1)])["date"]
+
         print ("last update saved", last_update_saved, "last_update_kh", last_update_kh)
         if last_update_saved != last_update_kh:
             return        
