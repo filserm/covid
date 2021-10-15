@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+    <title>Document</title>
+
+    <style>
+        body {  
+        //background: #14141d;
+        //padding: 16px;
+        }
+
+        canvas {
+
+            position: absolute;
+            margin: auto;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .chart-container {
+            position: absolute;
+            margin: auto;
+            height: 100vh;
+            width: 100vw;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- <div class="chart-container" style="position: relative; height:100vh; width:100vw">
+        <canvas id="myChart" style="position: relative; height: 100vh; width: 100vw;"></canvas>
+    </div> -->
+
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+    
+    
+      
+      <script>    
+
+        
+            const data = {
+                
+                labels: [##DATUMSWERTE##],
+                
+                datasets: [{
+                    
+                        type: 'line',
+                        label: 'Patienten auf Intensivstation',
+                        data: [##INTENSIV##],
+                        
+                        label: 'Before',
+                        backgroundColor: '#0D3AA9',
+                        borderColor: '#0D3AA9',
+                        datalabels: {
+                            color: '#000000'
+                        },
+                        pointRadius: 0, 
+                    },
+                    {
+                    
+                    type: 'line',
+                    label: 'Patienten auf Intensivstation',
+                    data: [##HOSPITAL##],
+                    
+                    label: 'Before',
+                    backgroundColor: '#ADD8E6',
+                    borderColor: '#ADD8E6',
+                    datalabels: {
+                        color: '#000000'
+                    },
+                    pointRadius: 0, 
+                }]
+                };
+         
+                
+                const options = {
+                
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        right: 40,  
+                        bottom: 25
+                    }
+                },
+                
+                scales: {
+                    y: {
+                        display: true,
+                        grid: {
+                            color: "white",
+                            // zeroLineWidth: 3,
+                            // zeroLineColor: "#ADD8E6",
+                        },
+                        //suggestedMin: 100,
+                        suggestedMax: 300,
+                        ticks: {
+                            stepSize: 25,
+                            //padding: 100
+                        }
+                    },
+                    x: {
+                        display: true,
+                        grid: {
+
+                            zeroLineWidth: 3,
+                            zeroLineColor: "#FFFFFF",
+                        },
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0,
+                            //padding: -200 ,
+                            callback: function(val, index, values) {
+                                maxIndex = values.length - 1;
+                                datum = this.getLabelForValue(val).slice(0,6);
+                                console.log(datum);
+                                //return (index === maxIndex || index === 0) ? this.getLabelForValue(val) : '';
+                                return (index === maxIndex || index === 0) ? datum : '';
+                            }
+                       
+                        //suggestedMin: 0,
+                        //suggestedMax: 600
+                       }
+                    }
+                },
+                
+
+                plugins: {
+                        legend: {
+                            display: false,
+                            position: "right",
+                            align: "middle"
+
+                        }
+                    ,
+                    //     title: {
+                    //         display: true,
+                    //         fullSize: true,
+                    //         color: 'white',
+                    //         padding: {
+                    //             top: 10,
+                    //             bottom: 30
+                    //         },
+                    //         font: {
+                    //             size: 20,
+                    //             weight: 'bold',
+                    //         },
+                    //         text: 'Verlauf'
+                    //     }
+                    // ,          
+                    //     annotation: {
+                    //         annotations: {
+                    //             line1: {
+                    //                 type: 'line',
+                    //                 yMin: 600,
+                    //                 yMax: 600,
+                    //                 borderColor: '#ff0000',
+                    //                 borderWidth: 2,
+                    //             }
+                    //         }
+                    //     }
+                    // ,
+                    datalabels: {
+                        backgroundColor: function(context) {
+                            return context.dataset.backgroundColor;
+                        },
+                        borderRadius: 4,
+                        borderWidth: function(context) {
+                            if (context.dataIndex === context.dataset.data.length - 1
+                                ||
+                                context.dataIndex === 0)
+                            {
+                                return 8;
+                            }
+                            return 0;
+                        }
+                        
+                        
+                        ,
+                        color: 'green',
+                        font: {
+                            weight: 'bold'
+                        },
+                        //formatter: Math.round,
+                        formatter: function(value, context) {
+                            if (context.dataIndex === context.dataset.data.length - 1
+                                ||
+                                context.dataIndex === 0)
+                            {   
+                                return value.y;
+                            }
+                            return "";
+                            
+                        },
+                        
+                    }
+                }
+            };
+        
+
+        const config = {
+        type: 'line',
+        data: data,
+        options: options ,
+        plugins: [ChartDataLabels],
+        };
+
+        
+
+        var myChart = new Chart(
+            document.getElementById('myChart'),
+            config,
+            
+        );
+       
+       
+    </script>
+</body>
+</html>

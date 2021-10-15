@@ -130,15 +130,13 @@ td {
 
 tr:first-child th {
   border-style:hidden !important;
- 
-
 }
 
 .table1 tr:last-child td {
   border-top: 0px !important;
  border-left: 0px !important;
  border-right: 0px !important;
- border-style: dashed solid !important;
+ //border-style: dashed solid !important;
 }
 
 .table2 tr:last-child td {
@@ -184,6 +182,47 @@ tr:first-child th {
   width: 15% !important;
 }
 
+/* table 3 */
+
+
+.table3 th {
+  border-style:hidden;
+  border: none;
+}
+
+.table3 td:nth-child(1) {
+  text-align: center;
+  padding-left: 15px;
+  width: 0%;
+}
+
+.table3 tr:nth-child(1) > td:nth-child(2) {
+  border-left:solid;
+  border-left-color: #ADD8E6;
+  padding-left: 15px !important;
+  text-align: left;
+  font-size: 14px;
+}
+
+.table3 tr:nth-child(2) > td:nth-child(2) {
+  border-left:solid;
+  border-left-color: #0D3AA9;
+  padding-left: 15px !important;
+  text-align: left;
+  font-size: 14px;
+}
+
+.table3 td:nth-child(3) {
+  padding-left: 0px !important;
+  text-align: left;
+}
+
+.table3 td:nth-child(4) {
+  padding-left: 0px !important;
+  text-align: left;
+}
+
+
 
 
 span {color: red;
@@ -228,20 +267,23 @@ p1 {
    </thead>
 </table>
 
-<table class="table table-dark table1">
+<table class="table table-dark table3">
   <thead>
-    <th colspan=13></th>
+    <th colspan = 12 style="text-align:left; font-size: 15px;">Coronavirus-Infektionszahlen Bayern</th>
   </thead>
   <tbody>
     ##HOSPITALISIERUNG##
   </tbody>
 </table>
 
+<div class="col-sm-6" style="margin:0px;padding:0px;overflow:hidden">
+  <iframe id="iFrame1" src="chart1.html" frameborder="0" style="overflow:hidden;height:20vh;width:100vw;"></iframe>
+</div>
 
   <table class="table table-dark table2">
-    <thead>
+    <!-- <thead>
       <th colspan = 6></th>
-    </thead>
+    </thead> -->
   
 <!-- <thead>
     
@@ -253,9 +295,9 @@ p1 {
   <tbody>
       
      
-      <td colspan = 2 style="font-size: 15px !important;">Stadt/Landkreis</td>
+      <!-- <td colspan = 2 style="font-size: 15px !important;">Stadt/Landkreis</td>
       <td style="font-size: 15px;">7 Tage Inzidenz pro 100k Einwohner</td>
-      <td colspan=3 style="font-size: 15px !important;">Diff gg Vortag</td> 
+      <td colspan=3 style="font-size: 15px !important;">Diff gg Vortag</td>  -->
   
       ##COVID_DATA##
       ##LAST_UPDATE## 
