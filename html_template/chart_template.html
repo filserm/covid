@@ -58,8 +58,8 @@
                         data: [##INTENSIV##],
                         
                         label: 'Before',
-                        backgroundColor: '#0D3AA9',
-                        borderColor: '#0D3AA9',
+                        backgroundColor: '#C0C0C0',
+                        borderColor: '#C0C0C0',
                         datalabels: {
                             color: '#000000'
                         },
@@ -72,8 +72,8 @@
                     data: [##HOSPITAL##],
                     
                     label: 'Before',
-                    backgroundColor: '#ADD8E6',
-                    borderColor: '#ADD8E6',
+                    backgroundColor: '#0099d5',
+                    borderColor: '#0099d5',
                     datalabels: {
                         color: '#000000'
                     },
@@ -81,6 +81,7 @@
                 }]
                 };
          
+                
                 
                 const options = {
                 
@@ -104,6 +105,11 @@
                         //suggestedMin: 100,
                         suggestedMax: 300,
                         ticks: {
+                            color: "white",
+                            font: {
+                                size: 14,
+                                weight: "bold"
+                            },
                             stepSize: 25,
                             //padding: 100
                         }
@@ -111,20 +117,24 @@
                     x: {
                         display: true,
                         grid: {
-
-                            zeroLineWidth: 3,
-                            zeroLineColor: "#FFFFFF",
+                            zeroLineWidth: 3
                         },
                         ticks: {
+                            color: "white",
+                            font: {
+                                size: 14,
+                                weight: "bold"
+                            },
                             maxRotation: 0,
                             minRotation: 0,
                             //padding: -200 ,
                             callback: function(val, index, values) {
                                 maxIndex = values.length - 1;
+                                let mid = Math.trunc(values.length / 2)
                                 datum = this.getLabelForValue(val).slice(0,6);
                                 console.log(datum);
                                 //return (index === maxIndex || index === 0) ? this.getLabelForValue(val) : '';
-                                return (index === maxIndex || index === 0) ? datum : '';
+                                return (index === maxIndex || index === mid|| index === 0) ? datum : '';
                             }
                        
                         //suggestedMin: 0,
@@ -175,7 +185,11 @@
                         },
                         borderRadius: 4,
                         borderWidth: function(context) {
+                            let mid = Math.trunc(context.dataset.data.length / 2)
+                            //console.log("bla",mid)
                             if (context.dataIndex === context.dataset.data.length - 1
+                                ||
+                                context.dataIndex === mid
                                 ||
                                 context.dataIndex === 0)
                             {
@@ -190,9 +204,12 @@
                         font: {
                             weight: 'bold'
                         },
-                        //formatter: Math.round,
+                        //formatter: Math.trunc,
                         formatter: function(value, context) {
+                            let mid = Math.trunc(context.dataset.data.length / 2)
                             if (context.dataIndex === context.dataset.data.length - 1
+                                ||
+                                context.dataIndex === mid
                                 ||
                                 context.dataIndex === 0)
                             {   
