@@ -438,13 +438,17 @@ def upload_html_b2():
     b2 = B2()
     bucket = b2.buckets.get('coviddata')
 
-    text_file = open(html_filename, 'rb')
     chart_file = open(chart_filename, 'rb')
+    try:
+        bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
+    except Exception as error:
+        print ("error: ", error)
+
+    text_file = open(html_filename, 'rb')
     bucket.files.upload(contents=text_file, file_name=html_out_filename)
-    bucket.files.upload(contents=chart_file, file_name=chart_filename)
 
 def chart_html(hosp, intensiv, datum):
-    global chart_filename
+     
     datum    = ','.join(f'"{w}"' for w in datum)
     intensiv = ','.join(intensiv)
     hosp     = ','.join(hosp)
@@ -453,6 +457,7 @@ def chart_html(hosp, intensiv, datum):
     chart_template_file = open(chart_template, 'r')
     chart_code = chart_template_file.readlines()
 
+    global chart_out_filename, chart_filename
     chart_out_filename = 'chart1.html'
     chart_filename = os.path.join(os.path.expanduser("~/covid/html_output"), chart_out_filename)
     chartfile = open (chart_filename, 'w')
