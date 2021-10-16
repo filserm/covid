@@ -439,9 +439,12 @@ def upload_html_b2():
     bucket = b2.buckets.get('coviddata')
 
     text_file = open(html_filename, 'rb')
+    chart_file = open(chart_filename, 'rb')
     bucket.files.upload(contents=text_file, file_name=html_out_filename)
+    bucket.files.upload(contents=chart_file, file_name=chart_filename)
 
 def chart_html(hosp, intensiv, datum):
+    global chart_filename
     datum    = ','.join(f'"{w}"' for w in datum)
     intensiv = ','.join(intensiv)
     hosp     = ','.join(hosp)
