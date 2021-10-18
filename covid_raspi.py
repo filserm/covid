@@ -668,7 +668,7 @@ def main():
     
     html(hosp[-1], intensiv[-1], datum[-1])
     
-    upload_html_b2() #backblaze bucket
+    #upload_html_b2() #backblaze bucket
 
 
 main()
