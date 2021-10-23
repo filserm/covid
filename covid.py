@@ -1,22 +1,12 @@
 import json
 from datetime import datetime as dt, timedelta
-from pprint import pprint
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.ticker as plticker
-import numpy as np
-from pylab import figure, text, scatter, show
-import re
-import subprocess
-from requests.auth import HTTPBasicAuth
 import requests
 import os
 import shelve
 import ssl
-#import locale
 import dateutil.parser
 from b2blaze import B2
-#set environment variables B2_KEY_ID and B2_APPLICATION_KEY
 from bs4 import BeautifulSoup #pip install beautifulsoup4
 from mongo_db_insert import Mongo
 import time
@@ -25,7 +15,6 @@ from modules.api import Api
 
 hostname = socket.gethostname()
 ssl._create_default_https_context = ssl._create_unverified_context
-#, cafile="/vagrant/certs/selfsigned.crt"
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -41,16 +30,17 @@ spritze = "\\U0001F489".encode("latin_1")
 smiley = (spritze.decode("raw_unicode_escape").encode('utf-16', 'surrogatepass').decode('utf-16'))
 
 
-url = 'https://api.covid19api.com/dayone/country/germany'
-url_IN = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20DACHAU%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=county,cases7_per_100k,last_update&returnGeometry=false&outSR=4326&f=json'
+#county data
+url = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20DACHAU%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=county,cases7_per_100k,last_update&returnGeometry=false&outSR=4326&f=json'
 
+#germany data - marlon lückert
 rki_url = 'https://api.corona-zahlen.org/germany'
+
+#vaccine data
 vaccine_url = 'https://api.corona-zahlen.org/vaccinations'
 
-days = 14
-rolling_window_avg = 7
-now = dt.now()
 
+now = dt.now()
 now = now.strftime("%d.%m.%Y, %H:%M Uhr") 
 
 wappen = {
@@ -59,7 +49,6 @@ wappen = {
             'DAH': 'https://f003.backblazeb2.com/file/coviddata/dachau.png' ,
             'KEH': 'https://f003.backblazeb2.com/file/coviddata/kelheim.png' ,
             'EI': 'https://f003.backblazeb2.com/file/coviddata/eichstaett.png' ,
-
 }
 
 def get_hospitalisierung():
@@ -169,11 +158,9 @@ def retrieve_vaccine_data():
     
 
 def retrieve_covid_data():
-    data = pd.DataFrame([])
-    data = pd.read_json(url)
  
-    data_IN = pd.DataFrame([])
-    data_IN = pd.read_json(url_IN, lines=True)
+    data = pd.DataFrame([])
+    data = pd.read_json(url, lines=True)
 
     global de_rki, de_rki_delta
 
@@ -184,7 +171,6 @@ def retrieve_covid_data():
             api_instance = Api(rki_url)
             api_instance.set_session()
             r = api_instance.parse_response()
-            last_update_rki = r.meta.lastUpdate
             de_rki          = r.cases
             de_rki_delta    = r.delta.cases
             if type(de_rki_delta) == int:
@@ -197,48 +183,36 @@ def retrieve_covid_data():
         de_rki = "null"
         de_rki_delta = "nicht verfügbar"
 
-    print (f'new cases: {de_rki_delta} ')
-    if data.empty:
-        print ("API Germany is not responding ...")
-        #data = ['no data']
-    else:
-        #letzte Zeile dropenhttps://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=county%20%3D%20%27SK%20INGOLSTADT%27%20OR%20county%20%3D%20%27LK%20DACHAU%27%20OR%20county%20%3D%20%27LK%20EICHST%C3%84TT%27%20OR%20county%20%3D%20%27LK%20PFAFFENHOFEN%20A.D.ILM%27%20OR%20county%20%3D%20%27LK%20KELHEIM%27&outFields=county,cases7_per_100k,last_update&returnGeometry=false&outSR=4326&f=json
-        #data.drop(data.tail(1).index,inplace=True)
-        data['datum'] = data['Date'].dt.strftime('%Y-%m-%d')
-        data['DeltaConfirmed'] = data['Confirmed'].diff()
-        data['mean_last7days'] = data.DeltaConfirmed.rolling(window=rolling_window_avg,min_periods=0).mean()
-        data['DeltaPercentage'] = data.DeltaConfirmed.pct_change() * 100
-#      data.to_csv (r'export_data.csv', index = False, header=True)
-        #pprint (data.tail(days))
+    print (f'new cases: {de_rki_delta} - cases total: {de_rki}')
     
     global inzidenz_dict
     inzidenz_dict = {}
-    ingo = pd.Series(data_IN['features']) 
-    data_IN['countyIN'] = ingo.iloc[0][0]['attributes']['county'][3:]
-    data_IN['last_updateIN'] = ingo.iloc[0][0]['attributes']['last_update']
-    data_IN['cases7_per_100kIN'] = ingo.iloc[0][0]['attributes']['cases7_per_100k']
+    ingo = pd.Series(data['features']) 
+    data['countyIN'] = ingo.iloc[0][0]['attributes']['county'][3:]
+    data['last_updateIN'] = ingo.iloc[0][0]['attributes']['last_update']
+    data['cases7_per_100kIN'] = ingo.iloc[0][0]['attributes']['cases7_per_100k']
 
-    data_IN['countyPAF'] = ingo.iloc[0][1]['attributes']['county'][3:]
-    data_IN['last_updatePAF'] = ingo.iloc[0][1]['attributes']['last_update']
-    data_IN['cases7_per_100kPAF'] = ingo.iloc[0][1]['attributes']['cases7_per_100k']
+    data['countyPAF'] = ingo.iloc[0][1]['attributes']['county'][3:]
+    data['last_updatePAF'] = ingo.iloc[0][1]['attributes']['last_update']
+    data['cases7_per_100kPAF'] = ingo.iloc[0][1]['attributes']['cases7_per_100k']
 
-    data_IN['countyKEH'] = ingo.iloc[0][2]['attributes']['county'][3:]
-    data_IN['last_updateKEH'] = ingo.iloc[0][2]['attributes']['last_update']
-    data_IN['cases7_per_100kKEH'] = ingo.iloc[0][2]['attributes']['cases7_per_100k']
+    data['countyKEH'] = ingo.iloc[0][2]['attributes']['county'][3:]
+    data['last_updateKEH'] = ingo.iloc[0][2]['attributes']['last_update']
+    data['cases7_per_100kKEH'] = ingo.iloc[0][2]['attributes']['cases7_per_100k']
 
-    data_IN['countyEI'] = ingo.iloc[0][3]['attributes']['county'][3:]
-    data_IN['last_updateEI'] = ingo.iloc[0][3]['attributes']['last_update']
-    data_IN['cases7_per_100kEI'] = ingo.iloc[0][3]['attributes']['cases7_per_100k']
+    data['countyEI'] = ingo.iloc[0][3]['attributes']['county'][3:]
+    data['last_updateEI'] = ingo.iloc[0][3]['attributes']['last_update']
+    data['cases7_per_100kEI'] = ingo.iloc[0][3]['attributes']['cases7_per_100k']
 
-    data_IN['countyDAH'] = ingo.iloc[0][4]['attributes']['county'][3:]
-    data_IN['last_updateDAH'] = ingo.iloc[0][4]['attributes']['last_update']
-    data_IN['cases7_per_100kDAH'] = ingo.iloc[0][4]['attributes']['cases7_per_100k']
+    data['countyDAH'] = ingo.iloc[0][4]['attributes']['county'][3:]
+    data['last_updateDAH'] = ingo.iloc[0][4]['attributes']['last_update']
+    data['cases7_per_100kDAH'] = ingo.iloc[0][4]['attributes']['cases7_per_100k']
 
-    inzidenz_dict['IN'] = [str (data_IN['countyIN'][0]), str(data_IN['cases7_per_100kIN'][0])[:5], str(data_IN['last_updateIN'][0])]
-    inzidenz_dict['PAF'] = [str (data_IN['countyPAF'][0]), str(data_IN['cases7_per_100kPAF'][0])[:5], str(data_IN['last_updatePAF'][0])]
-    inzidenz_dict['KEH'] = [str (data_IN['countyKEH'][0]), str(data_IN['cases7_per_100kKEH'][0])[:5], str(data_IN['last_updateKEH'][0])]
-    inzidenz_dict['EI'] = [str (data_IN['countyEI'][0]), str(data_IN['cases7_per_100kEI'][0])[:5], str(data_IN['last_updateEI'][0])]
-    inzidenz_dict['DAH'] = [str (data_IN['countyDAH'][0]), str(data_IN['cases7_per_100kDAH'][0])[:5], str(data_IN['last_updateDAH'][0])]
+    inzidenz_dict['IN'] = [str (data['countyIN'][0]), str(data['cases7_per_100kIN'][0])[:5], str(data['last_updateIN'][0])]
+    inzidenz_dict['PAF'] = [str (data['countyPAF'][0]), str(data['cases7_per_100kPAF'][0])[:5], str(data['last_updatePAF'][0])]
+    inzidenz_dict['KEH'] = [str (data['countyKEH'][0]), str(data['cases7_per_100kKEH'][0])[:5], str(data['last_updateKEH'][0])]
+    inzidenz_dict['EI'] = [str (data['countyEI'][0]), str(data['cases7_per_100kEI'][0])[:5], str(data['last_updateEI'][0])]
+    inzidenz_dict['DAH'] = [str (data['countyDAH'][0]), str(data['cases7_per_100kDAH'][0])[:5], str(data['last_updateDAH'][0])]
 
     last_update = ingo.iloc[0][0]['attributes']['last_update']
 
@@ -305,9 +279,6 @@ def retrieve_covid_data():
             #prev_fallzahl_BY = item['BY'][1]
             break
     
-    return data
-
-
 def upload_html_b2():    
     b2 = B2()
     bucket = b2.buckets.get('coviddata')
@@ -539,7 +510,7 @@ def main():
     hosp, intensiv, datum = get_hospitalisierung()
     chart_html(hosp, intensiv, datum)
     
-    data = retrieve_covid_data()
+    retrieve_covid_data()
     retrieve_vaccine_data()
     
     html(hosp[-1], intensiv[-1], datum[-1])
