@@ -20,7 +20,9 @@ from b2blaze import B2
 from bs4 import BeautifulSoup #pip install beautifulsoup4
 from mongo_db_insert import Mongo
 import time
+import socket
 
+hostname = socket.gethostname()
 ssl._create_default_https_context = ssl._create_unverified_context
 #, cafile="/vagrant/certs/selfsigned.crt"
 
@@ -188,14 +190,17 @@ def retrieve_covid_data():
             last_update_rki = data_rki['meta']['lastUpdate']
             de_rki = data_rki['cases']
             de_rki_delta = data_rki['delta']['cases']
-            print (f'new cases: {de_rki_delta} ')
             if type(de_rki_delta) == int:
                 break
         except:
             print ("sleep 10 sec")
             time.sleep(10)
             next
+        #set to "nicht verfügbar", if all 5 trys went bad
+        de_rki = "null"
+        de_rki_delta = "nicht verfügbar"
 
+    print (f'new cases: {de_rki_delta} ')
     if data.empty:
         print ("API Germany is not responding ...")
         #data = ['no data']
@@ -540,7 +545,12 @@ def main():
     
     html(hosp[-1], intensiv[-1], datum[-1])
     
-    upload_html_b2() #backblaze bucket
+    if 'rasp' in hostname:
+        #upload only on raspberry
+        upload_html_b2() #backblaze bucket
+    else:
+        pass
+    
 
 
 main()
