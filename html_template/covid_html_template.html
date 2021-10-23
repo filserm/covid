@@ -3,7 +3,7 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, shrink-to-fit=yes">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -36,7 +36,7 @@ table tr td {
 .table1 {
   table-layout: fixed !important;
   margin-bottom: 0px !important;
-  margin-top: -18px !important;
+  margin-top: -50px !important;
 
 }
 
@@ -75,6 +75,28 @@ img.wappen {
   //margin-bottom: -30px;
 }
 
+img.kh_logo {
+  /* width: 100%;
+  height:45%; */
+  width: 40px;
+  height: 40px;
+  margin-top: -5px;
+  margin-left: 0px;
+  //padding-right: 20px;
+}
+
+
+
+img.lights {
+  /* width: 100%;
+  height:45%; */
+  width: 18px;
+  height: 18px;
+  margin-top: -5px;
+  margin-left: 0px;
+  margin-top: 0px;
+}
+
 img.flags {
   /* width: 100%;
   height:45%; */
@@ -90,6 +112,15 @@ img.flags1 {
   margin-top: -18px !important;
 }
 
+img.flags2 {
+  /* width: 100%;
+  height:45%; */
+  width: 40px;
+  height: 27px;
+  //margin-top: -18px !important;
+}
+
+
 td {
   vertical-align: middle !important;
   /*text-align: center !important;*/
@@ -99,15 +130,12 @@ td {
 
 tr:first-child th {
   border-style:hidden !important;
- 
-
 }
 
 .table1 tr:last-child td {
   border-top: 0px !important;
  border-left: 0px !important;
  border-right: 0px !important;
- border-style: dashed solid !important;
 }
 
 .table2 tr:last-child td {
@@ -132,7 +160,7 @@ tr:first-child th {
   width: 15% !important;
   font-weight: bold !important;
   font-stretch: expanded !important;
-  font-size: 124% !important;
+  font-size: 140% !important;
 }
 .table2 td:nth-child(4) {
   padding: 0px !important;
@@ -153,11 +181,58 @@ tr:first-child th {
   width: 15% !important;
 }
 
+/* table 3 */
+
+
+.table3 th {
+  border-style:hidden;
+  border: none;
+}
+
+.table3 td:nth-child(1) {
+  text-align: center;
+  padding-left: 15px;
+  width: 0%;
+}
+
+.table3 tr:nth-child(1) > td:nth-child(2) {
+  border-left:solid;
+  border-left-width:  10px;
+  border-left-color: #0099d5;
+  padding-left: 15px !important;
+  text-align: left;
+  font-size: 16px;
+  /*color: #0099d5;*/
+}
+
+.table3 tr:nth-child(2) > td:nth-child(2) {
+  border-left:solid;
+  border-left-width:  10px;
+  border-left-color: #C0C0C0;
+  padding-left: 15px !important;
+  padding-right: 25px;
+  text-align: left;
+  font-size: 16px;
+}
+
+.table3 td:nth-child(3) {
+  padding-left: 0px !important;
+  text-align: left;
+  padding-right: 30px;
+}
+
+.table3 td:nth-child(4) {
+  padding-left: 0px !important;
+  text-align: left;
+  padding-right: 30px;
+}
+
+
 
 
 span {color: red;
     font-family: Big Shoulders Stencil Text;
-    font-size: 26px;
+    font-size: 30px;
     background-color: lightgrey;
   }
 
@@ -171,6 +246,7 @@ p1 {
   display:inline;
   color: grey;
 }
+
 
 </style>
 
@@ -190,22 +266,42 @@ p1 {
 <div id="bottom"></div> -->
 
 
+<div style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/corona.png" class="logo"></div> 
+
+
+<table class="table table-dark table3">
+  <thead>
+    <th colspan = 12 style="text-align:center; font-size: 20px; font-weight: bold;">Coronavirus-Infektionszahlen Bayern</th>
+  </thead>
+  <tbody>
+    ##HOSPITALISIERUNG##
+  </tbody>
+</table>
+
+<div class="col-sm-6" style="margin:0px;padding:0px;overflow:hidden">
+  <iframe id="iFrame1" src="chart1.html" frameborder="0" scrolling="no" style="overflow:hidden;height:23vh;width:100vw;"></iframe>
+</div>
+
+<div style="border-top:solid; border-width: 3px; border-color: grey !important">.</div>
+
   <table class="table table-dark table2">
+    <thead>
+      <th colspan = 12 style="text-align:center; font-size: 20px; font-weight: bold;">7 Tage Inzidenzwerte</th>
+   </thead>
   
-<thead>
+<!-- <thead>
     
         <th colspan = 6 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/corona.png" class="logo"></th> 
-          <!-- <tr><td colspan = 5 style="text-align:center"><img src="https://storage.googleapis.com/darkshadow-share/corona_christmas.jpeg" class="logo"></td>   -->
         
- </thead>
+ </thead> -->
 
  
   <tbody>
       
      
-      <td colspan = 2>Stadt/Landkreis</td>
-      <td style="font-size: 100% !important;">7 Tage Inzidenz pro 100k Einwohner</td>
-      <td colspan=3 style="font-size: 100% !important;">Diff gg Vortag</td> 
+      <!-- <td colspan = 2 style="font-size: 15px !important;">Stadt/Landkreis</td>
+      <td style="font-size: 15px;">7 Tage Inzidenz pro 100k Einwohner</td>
+      <td colspan=3 style="font-size: 15px !important;">Diff gg Vortag</td>  -->
   
       ##COVID_DATA##
       ##LAST_UPDATE## 
@@ -216,6 +312,8 @@ p1 {
   </tbody>
 </table>
   
+<div style="border-top:solid; border-width: 5px; border-color: grey !important">.</div>
+
 <table class="table table-dark table1">
   <thead>
     ##VACCINE_HEADER##

@@ -17,7 +17,8 @@ import ssl
 import dateutil.parser
 from b2blaze import B2
 #set environment variables B2_KEY_ID and B2_APPLICATION_KEY
-
+from bs4 import BeautifulSoup #pip install beautifulsoup4
+from mongo_db_insert import Mongo
 
 ssl._create_default_https_context = ssl._create_unverified_context
 #, cafile="/vagrant/certs/selfsigned.crt"
@@ -60,6 +61,74 @@ wappen = {
             'EI': 'https://f003.backblazeb2.com/file/coviddata/eichstaett.png' ,
 
 }
+
+def get_hospitalisierung():
+    mongodb = Mongo(
+        cluster = 'cluster0.tr5bj.mongodb.net'
+        , database = 'covid'
+        , collection = 'hospital'
+    )
+    mongodb.connect()
+
+    hosp, intensiv, datum = [], [], []
+
+    try:
+        cursor = mongodb.collection.find({})
+        for document in cursor:
+          hosp.append(document['krankenhaus'])
+          intensiv.append(document['intensivstation'])
+          datum.append(document['date'])
+        return hosp, intensiv, datum
+
+    except Exception as e:
+        print (e)
+
+    
+   
+   
+    # global hosp, hosp_inz, intensiv, last_update_kh
+    # data = []
+    # stand = []
+
+    # try:
+    #     url = 'https://www.lgl.bayern.de/gesundheit/infektionsschutz/infektionskrankheiten_a_z/coronavirus/karte_coronavirus/index.htm#kennzahlen'
+    #     req = requests.get(url)
+    #     html = BeautifulSoup(req.content, 'html.parser')
+    #     #print(soup.prettify())
+    #     data.append (html.find_all("td"))
+    #     stand.append(html.find_all("p"))
+        
+    #     hosp = str(data[0][1])
+    #     hosp_inz = str(data[0][3])
+    #     intensiv = str(data[0][13])
+
+    #     index = hosp.index('>')
+    #     hosp = hosp[index+1:]
+    #     index = hosp.index('<')
+    #     hosp = hosp[:index]
+        
+    #     index = intensiv.index('>')
+    #     intensiv = intensiv[index+1:]
+    #     index = intensiv.index('<')
+    #     intensiv = intensiv[:index]
+    #     print (hosp)
+
+    #     last_update_kh = str(stand[0][8])
+
+    #     print (last_update_kh)
+
+    #     index = last_update_kh.index('Stand: ')
+    #     last_update_kh = last_update_kh[index+6:]
+    #     index = last_update_kh.index('<')
+    #     last_update_kh = last_update_kh[:index-1]
+    #     print ("last update: ", last_update_kh)
+        
+    # except Exception as error:
+    #     hosp = "n/a"
+    #     intensiv = "n/a"
+    #     last_update_kh = "n/a"
+
+
 
 def retrieve_vaccine_data():
     global vaccine_record, last_update_vaccine_formated
@@ -155,14 +224,20 @@ def retrieve_covid_data():
     global de_rki, de_rki_delta
     #data_rki = pd.DataFrame([])
     #data_rki = pd.read_json(rki_url, lines=True)
-    s = requests.Session()
-    resp = s.get(rki_url)
-    
-    data_rki = resp.json()
-    #last_update_rki = data_rki['lastUpdate']
-    last_update_rki = data_rki['meta']['lastUpdate']
-    de_rki = data_rki['cases']
-    de_rki_delta = data_rki['delta']['cases']
+
+    try:
+        s = requests.Session()
+        resp = s.get(rki_url)
+        
+        data_rki = resp.json()
+        #last_update_rki = data_rki['lastUpdate']
+        last_update_rki = data_rki['meta']['lastUpdate']
+        de_rki = data_rki['cases']
+        de_rki_delta = data_rki['delta']['cases']
+    except Exception as error:
+        de_rki = "null"
+        de_rki_delta = "nicht verfügbar"
+        print ("API not available")
 
     if data.empty:
         print ("API Germany is not responding ...")
@@ -174,7 +249,7 @@ def retrieve_covid_data():
         data['DeltaConfirmed'] = data['Confirmed'].diff()
         data['mean_last7days'] = data.DeltaConfirmed.rolling(window=rolling_window_avg,min_periods=0).mean()
         data['DeltaPercentage'] = data.DeltaConfirmed.pct_change() * 100
-  #      data.to_csv (r'export_data.csv', index = False, header=True)
+#      data.to_csv (r'export_data.csv', index = False, header=True)
         #pprint (data.tail(days))
     
     global inzidenz_dict
@@ -215,7 +290,7 @@ def retrieve_covid_data():
         #print ("key:", last_update)
         #print ("value:", inzidenz_dict)
         db[last_update]=inzidenz_dict
-       
+    
     
     prev_inzidenz = shelve.open(path)
 
@@ -261,7 +336,7 @@ def retrieve_covid_data():
     with shelve.open(path) as db:
         db[last_update]=fallzahlen_dict
         #db['07.11.2020, 00:00 Uhr']=fallzahlen_dict
-       
+    
     prev_fallzahl = shelve.open(path)
     for k, item in sorted(prev_fallzahl.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
         #print ("Datum", k, "last_update", last_update)
@@ -270,11 +345,6 @@ def retrieve_covid_data():
             prev_fallzahl_DE = item['DE'][1]
             #prev_fallzahl_BY = item['BY'][1]
             break
-
-    global diff_DE
-    diff_DE  = int(float(de_rki)  - float(prev_fallzahl_DE))
-    diff_DE = f'{diff_DE:,}'
-    diff_DE = diff_DE.replace(',','.')
     
     return data
 
@@ -368,13 +438,47 @@ def upload_html_b2():
     b2 = B2()
     bucket = b2.buckets.get('coviddata')
 
+    chart_file = open(chart_filename, 'rb')
+    try:
+        bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
+    except Exception as error:
+        print ("error: ", error)
+
     text_file = open(html_filename, 'rb')
     bucket.files.upload(contents=text_file, file_name=html_out_filename)
-   
 
-def html():
+def chart_html(hosp, intensiv, datum):
+     
+    datum    = ','.join(f'"{w}"' for w in datum)
+    intensiv = ','.join(intensiv)
+    hosp     = ','.join(hosp)
+
+    chart_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'chart_template.html')
+    chart_template_file = open(chart_template, 'r')
+    chart_code = chart_template_file.readlines()
+
+    global chart_out_filename, chart_filename
+    chart_out_filename = 'chart1.html'
+    chart_filename = os.path.join(os.path.expanduser("~/covid/html_output"), chart_out_filename)
+    chartfile = open (chart_filename, 'w')
+
+    for item in chart_code:
+        if item.find('##DATUMSWERTE##') > 0:
+            item = item.replace('##DATUMSWERTE##', datum)
+        if item.find('##INTENSIV##') > 0:
+            item = item.replace('##INTENSIV##', intensiv)
+        if item.find('##HOSPITAL##') > 0:
+            item = item.replace('##HOSPITAL##', hosp)
+        
+        chartfile.write(item)
+    chartfile.close()
+
+
+def html(hosp, intensiv, last_update_kh):
+
+    print ("hospi:", hosp, "intensiv", intensiv)
     
-    add_line=[]
+    add_line, new_line_hosp =  [], []
     i = 1
     html_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'covid_html_template.html')
     html_template_file = open(html_template, 'r')
@@ -386,6 +490,42 @@ def html():
     htmlfile = open (html_filename, 'w')
 
     for item in html_code:
+        if item.find('##HOSPITALISIERUNG##') > 0:
+
+            green = '#56f86b'
+            try:
+                if int (intensiv) > 600:
+                    text_color_intensiv = "red"
+                elif int (hosp) > 1200:
+                    text_color_hosp = "yellow"
+                else:
+                    text_color_hosp = green
+                    text_color_intensiv = green
+            except:
+                text_color_hosp = green
+                text_color_intensiv = green
+
+            new_line_hosp.append(f'''
+                       
+            <tr>
+                <td colspan = 1 style="text-align:left"><img src="https://f003.backblazeb2.com/file/coviddata/hospital.png" class="kh_logo"></td>
+                <td colspan = 5 >Neuaufnahmen Krankenhaus (7 Tage)</td>
+                <td colspan = 2 style="text-align: left; font-size: 24px; color:{text_color_hosp}">{hosp}</td>
+                <td colspan = 4 style="font-size: 10px !important; color:yellow !important;">><br>1.200</td>
+            </tr>     
+            <tr>
+                <td colspan = 1 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
+                <td colspan = 5 >Patienten auf Intensivstation</td>                
+                <td colspan = 2 style="font-size: 24px; text-align:left; color:{text_color_intensiv}">{intensiv}</td>
+                <td colspan = 4 style="font-size: 10px !important; color: red !important">><br>600</td>
+            </tr>            
+            ''')
+
+            #new_line_hosp.append(f'<tr><td colspan = 13 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung {last_update_kh}</td></tr>')
+            new_line = ''.join(new_line_hosp)
+            item = item.replace('##HOSPITALISIERUNG##', new_line)
+             
+
         if item.find('##COVID_DATA##') > 0:
             for k, v in sorted(inzidenz_dict.items(), key=lambda x: float(x[1][1]), reverse=True):
                 add_line.append('<tr>')
@@ -431,12 +571,10 @@ def html():
                               
                     '''
                     )
-            #item = item.replace('##RKI##' , f'<tr><td colspan = 2 class="text-primary">Neuinfektionen DE (RKI):  {diff_DE}</td></tr>')
-            
+           
        
         if item.find('##LAST_UPDATE##') > 0:
             item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 6 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung RKI {last_update}</td></tr>')
-            #item = item.replace('##LAST_UPDATE##' ,f'<tr><td colspan = 2 class="text-warning">Letzte Aktualisierung:      {last_update}</td></tr>')
         
         if item.find('##VACCINE_HEADER##') >0:
             item = item.replace('##VACCINE_HEADER##' ,f"""
@@ -522,13 +660,15 @@ class Inzidenz():
 
 
 def main():
+    hosp, intensiv, datum = get_hospitalisierung()
+    chart_html(hosp, intensiv, datum)
+    
     data = retrieve_covid_data()
     retrieve_vaccine_data()
-    #plot_data(data)
-    #upload_plot()
-    html()
-    #upload_html() #gcp bucket
-    #upload_html_b2() #backblaze bucket
+    
+    html(hosp[-1], intensiv[-1], datum[-1])
+    
+    upload_html_b2() #backblaze bucket
 
 
 main()
