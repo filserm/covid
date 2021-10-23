@@ -498,16 +498,18 @@ class Inzidenz():
         #print (self.county, self.inzidenz, self.last_update)
         #self.inzidenz_vortag = -10
         if self.inzidenz_vortag > 0:
-            add_arrow = '<img src="https://f003.backblazeb2.com/file/coviddata/red_up.png" class="arrow">'
+            # add_arrow = '\n<img src="https://f003.backblazeb2.com/file/coviddata/red_up.png" class="arrow">\n'
+            add_arrow = '\n<span class="arrow arrow-top"></span>\n'
             arrow = "up"
             effect = 'font-effect-fire-animation'
         elif self.inzidenz_vortag < 0:
-            add_arrow = '<img src="https://f003.backblazeb2.com/file/coviddata/green_down.png" class="arrow">'
+            #add_arrow = '\n<img src="https://f003.backblazeb2.com/file/coviddata/green_down.png" class="arrow">\n'
+            add_arrow = '\n<span class="arrow arrow-down"></span>\n'
             arrow = "down"
             #color_gn = '#56f86b'
             effect = ''
         elif self.inzidenz_vortag == 0:
-            add_arrow = ''
+            add_arrow = '\n<span class="line"></span>\n'
             arrow = 'up'
             effect = ''
         if float(self.inzidenz) >= 100.00:
