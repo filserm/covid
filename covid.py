@@ -21,6 +21,7 @@ from bs4 import BeautifulSoup #pip install beautifulsoup4
 from mongo_db_insert import Mongo
 import time
 import socket
+from modules.api import Api
 
 hostname = socket.gethostname()
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -175,25 +176,21 @@ def retrieve_covid_data():
     data_IN = pd.read_json(url_IN, lines=True)
 
     global de_rki, de_rki_delta
-    #data_rki = pd.DataFrame([])
-    #data_rki = pd.read_json(rki_url, lines=True)
-
-    
-    s = requests.Session()
 
     #try it five times
     for i in range(1,6):                   
         try:
             print (f'try - {i} ...') 
-            resp = s.get(rki_url)   
-            data_rki = resp.json()
-            last_update_rki = data_rki['meta']['lastUpdate']
-            de_rki = data_rki['cases']
-            de_rki_delta = data_rki['delta']['cases']
+            api_instance = Api(rki_url)
+            api_instance.set_session()
+            r = api_instance.parse_response()
+            last_update_rki = r.meta.lastUpdate
+            de_rki          = r.cases
+            de_rki_delta    = r.delta.cases
             if type(de_rki_delta) == int:
                 break
-        except:
-            print ("sleep 10 sec")
+        except Exception as e:
+            print ("sleep 10 sec", e)
             time.sleep(10)
             next
         #set to "nicht verfügbar", if all 5 trys went bad
