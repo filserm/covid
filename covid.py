@@ -76,30 +76,30 @@ def get_hospitalisierung():
 def retrieve_vaccine_data():
     global vaccine_record, last_update_vaccine_formated
 
-    data = s = requests.Session()
-    resp = s.get(vaccine_url)
-    vaccine = resp.json()
-    last_update_vaccine      = vaccine['meta']['lastUpdate']
-    last_update_vaccine      = dateutil.parser.parse(last_update_vaccine)
+    api_instance = Api(vaccine_url)
+    api_instance.set_session()
+    vaccine = api_instance.parse_response()
+
+    last_update_vaccine = vaccine.meta.lastUpdate
+    last_update_vaccine = dateutil.parser.parse(last_update_vaccine)
     last_update_vaccine_formated = last_update_vaccine.strftime("%d.%m.%Y, %H:%M Uhr")
     #print (last_update_vaccine_formated)
 
     last_update_vaccine      = str(last_update_vaccine)
-    de_vaccine_total = vaccine['data']['vaccinated']
-    de_vaccine_delta = vaccine['data']['delta']
-    de_vaccine_quote = vaccine['data']['quote']
-    by_vaccine_total = vaccine['data']['states']['BY']['vaccinated']
-    by_vaccine_delta = vaccine['data']['states']['BY']['delta']
-    by_vaccine_quote = vaccine['data']['states']['BY']['quote']
-    last_checked = vaccine['data']['states']['BY']['delta']
+    de_vaccine_total = vaccine.data.vaccinated
+    de_vaccine_delta = vaccine.data.delta
+    de_vaccine_quote = vaccine.data.quote
+    by_vaccine_total = vaccine.data.states.BY.vaccinated
+    by_vaccine_delta = vaccine.data.states.BY.delta
+    by_vaccine_quote = vaccine.data.states.BY.quote
 
-    de_vaccine_second_total = vaccine['data']['secondVaccination']['vaccinated']
-    de_vaccine_second_delta = vaccine['data']['secondVaccination']['delta']
-    de_vaccine_second_quote = vaccine['data']['secondVaccination']['quote']
+    de_vaccine_second_total = vaccine.data.secondVaccination.vaccinated
+    de_vaccine_second_delta = vaccine.data.secondVaccination.delta
+    de_vaccine_second_quote = vaccine.data.secondVaccination.quote
 
-    by_vaccine_second_total = vaccine['data']['states']['BY']['secondVaccination']['vaccinated']
-    by_vaccine_second_delta = vaccine['data']['states']['BY']['secondVaccination']['delta']
-    by_vaccine_second_quote = vaccine['data']['states']['BY']['secondVaccination']['quote']
+    by_vaccine_second_total = vaccine.data.states.BY.secondVaccination.vaccinated
+    by_vaccine_second_delta = vaccine.data.states.BY.secondVaccination.delta
+    by_vaccine_second_quote = vaccine.data.states.BY.secondVaccination.quote
 
     de_vaccine_total = f'{de_vaccine_total:,}'
     de_vaccine_total = de_vaccine_total.replace(',','.')
@@ -274,7 +274,7 @@ def retrieve_covid_data():
     for k, item in sorted(prev_fallzahl.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
         #print ("Datum", k, "last_update", last_update)
         if k != last_update:
-            print ("asf")
+            #print ("asf")
             prev_fallzahl_DE = item['DE'][1]
             #prev_fallzahl_BY = item['BY'][1]
             break
