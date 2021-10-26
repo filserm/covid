@@ -72,7 +72,13 @@ def get_hospitalisierung():
     except Exception as e:
         print (e)
 
-    
+
+def replace_comma(a):
+    return a.replace(',','.')
+
+def replace_dot(a):
+    return a.replace('.',',')
+
 def retrieve_vaccine_data():
     global vaccine_record, last_update_vaccine_formated
 
@@ -88,56 +94,36 @@ def retrieve_vaccine_data():
     last_update_vaccine      = str(last_update_vaccine)
     de_vaccine_total = vaccine.data.vaccinated
     de_vaccine_delta = vaccine.data.delta
-    de_vaccine_quote = vaccine.data.quote
+    de_vaccine_quote = vaccine.data.quote * 100.00
     by_vaccine_total = vaccine.data.states.BY.vaccinated
     by_vaccine_delta = vaccine.data.states.BY.delta
-    by_vaccine_quote = vaccine.data.states.BY.quote
+    by_vaccine_quote = vaccine.data.states.BY.quote *100.00
 
     de_vaccine_second_total = vaccine.data.secondVaccination.vaccinated
     de_vaccine_second_delta = vaccine.data.secondVaccination.delta
-    de_vaccine_second_quote = vaccine.data.secondVaccination.quote
+    de_vaccine_second_quote = vaccine.data.secondVaccination.quote * 100.00
 
     by_vaccine_second_total = vaccine.data.states.BY.secondVaccination.vaccinated
     by_vaccine_second_delta = vaccine.data.states.BY.secondVaccination.delta
-    by_vaccine_second_quote = vaccine.data.states.BY.secondVaccination.quote
+    by_vaccine_second_quote = vaccine.data.states.BY.secondVaccination.quote * 100.00
 
-    de_vaccine_total = f'{de_vaccine_total:,}'
-    de_vaccine_total = de_vaccine_total.replace(',','.')
+    de_vaccine_total = replace_comma(f'{de_vaccine_total:,}')
+    de_vaccine_delta = replace_comma(f'{de_vaccine_delta:,}')
+    by_vaccine_total = replace_comma(f'{by_vaccine_total:,}')
+    by_vaccine_delta = replace_comma(f'{by_vaccine_delta:,}')
 
-    de_vaccine_delta = f'{de_vaccine_delta:,}'
-    de_vaccine_delta = de_vaccine_delta.replace(',','.')
+    de_vaccine_quote = replace_dot(format(de_vaccine_quote, '.2f')+'%')   
+    by_vaccine_quote = replace_dot(format(by_vaccine_quote, '.2f')+'%')
 
-    by_vaccine_total = f'{by_vaccine_total:,}'
-    by_vaccine_total = by_vaccine_total.replace(',','.')
-
-    by_vaccine_delta = f'{by_vaccine_delta:,}'
-    by_vaccine_delta = by_vaccine_delta.replace(',','.')
-
-    de_vaccine_quote = de_vaccine_quote * 100.00
-    de_vaccine_quote = format(de_vaccine_quote, '.2f').replace('.',',')+'%'
+    de_vaccine_second_total = replace_comma(f'{de_vaccine_second_total:,}')
+    de_vaccine_second_delta = replace_comma(f'{de_vaccine_second_delta:,}')
     
-    by_vaccine_quote = by_vaccine_quote * 100.00
-    by_vaccine_quote = format(by_vaccine_quote, '.2f').replace('.',',')+'%'
+    de_vaccine_second_quote = replace_dot(format(de_vaccine_second_quote, '.2f')+'%')
 
-
-    de_vaccine_second_total = f'{de_vaccine_second_total:,}'
-    de_vaccine_second_total = de_vaccine_second_total.replace(',','.')
-
-    de_vaccine_second_delta = f'{de_vaccine_second_delta:,}'
-    de_vaccine_second_delta = de_vaccine_second_delta.replace(',','.')
+    by_vaccine_second_total = replace_comma(f'{by_vaccine_second_total:,}')
+    by_vaccine_second_delta = replace_comma(f'{by_vaccine_second_delta:,}')
     
-    de_vaccine_second_quote = de_vaccine_second_quote * 100.00
-    de_vaccine_second_quote = format(de_vaccine_second_quote, '.2f').replace('.',',')+'%'
-
-
-    by_vaccine_second_total = f'{by_vaccine_second_total:,}'
-    by_vaccine_second_total = by_vaccine_second_total.replace(',','.')
-
-    by_vaccine_second_delta = f'{by_vaccine_second_delta:,}'
-    by_vaccine_second_delta = by_vaccine_second_delta.replace(',','.')
-    
-    by_vaccine_second_quote = by_vaccine_second_quote * 100.00
-    by_vaccine_second_quote = format(by_vaccine_second_quote, '.2f').replace('.',',')+'%'
+    by_vaccine_second_quote = replace_dot(format(by_vaccine_second_quote, '.2f')+'%')
 
     #print (last_update, de_vaccine_total, de_vaccine_delta, by_vaccine_total, by_vaccine_delta)
     global vaccine_dict
