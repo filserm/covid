@@ -150,8 +150,8 @@ def retrieve_covid_data():
 
     global de_rki, de_rki_delta
 
-    #try it five times
-    for i in range(1,6):                   
+    #try it 15 times
+    for i in range(1,16):                   
         try:
             print (f'try - {i} ...') 
             api_instance = Api(rki_url)
