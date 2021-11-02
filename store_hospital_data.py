@@ -76,7 +76,9 @@ def get_hospitalisierung():
 
 def check_mongo(data, last_update_kh):
     try:
-        last_update_saved = mongodb.collection.find_one({"date": {"$exists": True}}, sort=[("date", -1)])["date"]
+        #last_update_saved = mongodb.collection.find_one({"date": {"$exists": True}}, sort=[("date", -1)])["date"]
+        for document in mongodb.collection.find():
+            last_update_saved =document['date']
 
         print ("last update saved", last_update_saved, "last_update_kh", last_update_kh)
         if last_update_saved != last_update_kh:
@@ -85,8 +87,8 @@ def check_mongo(data, last_update_kh):
             return        
         else:
             print ("data already available or not available till now")
-    except:
-        return
+    except Exception as e:
+        print ("error: ", e)
         
 
 def main():
