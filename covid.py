@@ -63,15 +63,27 @@ def get_hospitalisierung():
 
     try:
         cursor = mongodb.collection.find({})
+        count_documents = int(mongodb.collection.count_documents({}))
+        
+        i, hosp_yesterday, intensiv_yesterday=0,0,0
         for document in cursor:
-          hosp.append(document['krankenhaus'])
-          intensiv.append(document['intensivstation'])
-          datum.append(document['date'])
-        return hosp, intensiv, datum
+            i += 1
+            if i == count_documents-1:
+                hosp_yesterday     = int(document['krankenhaus'])
+                intensiv_yesterday = int(document['intensivstation'])
+
+            hosp.append(document['krankenhaus'])
+            intensiv.append(document['intensivstation'])
+            datum.append(document['date'])
+            hosp_diff_yesterday     = int(document['krankenhaus']) - hosp_yesterday
+            intensiv_diff_yesterday = int(document['intensivstation']) - intensiv_yesterday
+
+        return hosp, intensiv, datum, hosp_diff_yesterday, intensiv_diff_yesterday
 
     except Exception as e:
         print (e)
 
+    
 
 def replace_comma(a):
     return a.replace(',','.')
@@ -305,7 +317,7 @@ def chart_html(hosp, intensiv, datum):
     chartfile.close()
 
 
-def html(hosp, intensiv, last_update_kh):
+def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yesterday):
 
     print ("hospi:", hosp, "intensiv", intensiv)
     
@@ -335,20 +347,25 @@ def html(hosp, intensiv, last_update_kh):
             except:
                 text_color_hosp = green
                 text_color_intensiv = green
+            
+            if hosp_diff_yesterday > 0:
+                hosp_diff_yesterday = '+ ' + str(hosp_diff_yesterday)
+            if intensiv_diff_yesterday > 0:
+                intensiv_diff_yesterday = '+ ' + str(intensiv_diff_yesterday)
 
             new_line_hosp.append(f'''
                        
             <tr>
                 <td colspan = 1 style="text-align:left"><img src="https://f003.backblazeb2.com/file/coviddata/hospital.png" class="kh_logo"></td>
-                <td colspan = 5 >Neuaufnahmen Krankenhaus (7 Tage)</td>
-                <td colspan = 2 style="text-align: left; font-size: 20px; color:{text_color_hosp}">{hosp}</td>
-                <td colspan = 4 style="font-size: 10px !important; color:yellow !important;">><br>1.200</td>
+                <td colspan = 1 >Neuaufnahmen Krankenhaus (7 Tage)</td>
+                <td colspan = 2 style="text-align: left; font-size: 20px; color:{text_color_hosp}">{hosp} <p2>{hosp_diff_yesterday}</p2></td>
+                <td colspan = 1 style="font-size: 10px !important; color:yellow !important;">><br>1.200</td>
             </tr>     
             <tr>
                 <td colspan = 1 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
-                <td colspan = 5 >Patienten auf Intensivstation</td>                
-                <td colspan = 2 style="font-size: 20px; text-align:left; color:{text_color_intensiv}">{intensiv}</td>
-                <td colspan = 4 style="font-size: 10px !important; color: red !important">><br>600</td>
+                <td colspan = 1 >Patienten auf Intensivstation</td>                
+                <td colspan = 2 style="font-size: 20px; text-align:left; color:{text_color_intensiv}">{intensiv} <p2>{intensiv_diff_yesterday}</p2></td>
+                <td colspan = 1 style="font-size: 10px !important; color: red !important">><br>600</td>
             </tr>            
             ''')
 
@@ -493,13 +510,13 @@ class Inzidenz():
 
 
 def main():
-    hosp, intensiv, datum = get_hospitalisierung()
+    hosp, intensiv, datum, hosp_diff_yesterday, intensiv_diff_yesterday = get_hospitalisierung()
     chart_html(hosp, intensiv, datum)
     
     retrieve_covid_data()
     retrieve_vaccine_data()
     
-    html(hosp[-1], intensiv[-1], datum[-1])
+    html(hosp[-1], intensiv[-1], datum[-1], hosp_diff_yesterday, intensiv_diff_yesterday)
     
     if 'rasp' in hostname:
         #upload only on raspberry
