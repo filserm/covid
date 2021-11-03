@@ -349,9 +349,9 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
                 text_color_intensiv = green
             
             if hosp_diff_yesterday > 0:
-                hosp_diff_yesterday = '+ ' + str(hosp_diff_yesterday)
+                hosp_diff_yesterday = '+' + str(hosp_diff_yesterday)
             if intensiv_diff_yesterday > 0:
-                intensiv_diff_yesterday = '+ ' + str(intensiv_diff_yesterday)
+                intensiv_diff_yesterday = '+' + str(intensiv_diff_yesterday)
 
             new_line_hosp.append(f'''
                        
