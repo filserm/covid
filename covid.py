@@ -339,6 +339,7 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
             try:
                 if int (intensiv) > 600:
                     text_color_intensiv = "red"
+                    text_color_hosp = "red"
                 elif int (hosp) > 1200 or int (intensiv) > 450:
                     text_color_hosp = "yellow"
                     text_color_intensiv = "yellow"
