@@ -339,8 +339,9 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
             try:
                 if int (intensiv) > 600:
                     text_color_intensiv = "red"
-                elif int (hosp) > 1200:
+                elif int (hosp) > 1200 or int (intensiv) > 450:
                     text_color_hosp = "yellow"
+                    text_color_intensiv = "yellow"
                 else:
                     text_color_hosp = green
                     text_color_intensiv = green
@@ -359,13 +360,13 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
                 <td colspan = 1 style="text-align:left"><img src="https://f003.backblazeb2.com/file/coviddata/hospital.png" class="kh_logo"></td>
                 <td colspan = 1 >Neuaufnahmen Krankenhaus (7 Tage)</td>
                 <td colspan = 2 style="line-height: 1; text-align: left; font-size: 20px; color:{text_color_hosp}">{hosp} <p2>{hosp_diff_yesterday}</p2></td>
-                <td colspan = 1 style="font-size: 10px !important; color:yellow !important;">><br>1.200</td>
+                <td colspan = 1 style="font-size: 10px !important; color:yellow !important;">> 1.200</td>
             </tr>     
             <tr>
                 <td colspan = 1 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
                 <td colspan = 1 >Patienten auf Intensivstation</td>                
                 <td colspan = 2 style="line-height: 1; font-size: 20px; text-align:left; color:{text_color_intensiv}">{intensiv} <p2>{intensiv_diff_yesterday}</p2></td>
-                <td colspan = 1 style="font-size: 10px !important; color: red !important">><br>600</td>
+                <td colspan = 1 style="font-size: 10px !important; color: yellow !important">> 450<br><span1 style="font-size: 10px !important; color: red !important">> 600</span1></td>
             </tr>            
             ''')
 
