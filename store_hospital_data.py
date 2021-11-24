@@ -30,37 +30,30 @@ def get_hospitalisierung():
         req = requests.get(url)
         html = BeautifulSoup(req.content, 'html.parser')
         #print(soup.prettify())
-        data.append (html.find_all("td"))
-        stand.append(html.find_all("p"))
+        #data.append (html.find_all("td"))
+        data.append (html.find_all("strong"))
+        stand.append(html.find_all("p"))     
         
-        hosp = str(data[0][1])
-        hosp_inz = str(data[0][3])
-        intensiv = str(data[0][13])
-
+        hosp = str(data[0][0])
         index = hosp.index('>')
         hosp = hosp[index+1:]
-        index = hosp.index('<')
-        hosp = hosp[:index]
-        
-        index = intensiv.index('>')
+        index = hosp.index('\n')
+        hosp = hosp[:index].strip().replace('.','')
+
+        intensiv = str(data[0][1])
+        index = intensiv.index('\n')
         intensiv = intensiv[index+1:]
-        index = intensiv.index('<')
-        intensiv = intensiv[:index]
-        #print (hosp)
+        index = intensiv.index('\n')
+        intensiv = intensiv[:index].strip().replace('.','')
 
-        last_update_kh = str(stand[0][8])
+        hosp_inz = str(data[0][1])[4:8].strip()
 
-        #print (last_update_kh)
 
-        index = last_update_kh.index('Stand: ')
-        last_update_kh = last_update_kh[index+6:]
-        index = last_update_kh.index(',')
-        last_update_kh = last_update_kh[:index]
-        last_update_kh = last_update_kh.strip()
-
-        #index = last_update_kh.index('<')
-        #last_update_kh = last_update_kh[:index-1]
-        #print ("last update: ", last_update_kh)
+        last_update_kh = str(stand[0][7])
+        index = last_update_kh.index(':')
+        last_update_kh = last_update_kh[index+2:]
+        index = last_update_kh.index('(')
+        last_update_kh = last_update_kh[:index].strip()
 
         data = {"krankenhaus" : hosp,
                 "intensivstation": intensiv,
