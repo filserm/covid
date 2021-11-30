@@ -37,17 +37,16 @@ def get_hospitalisierung():
         hosp = str(data[0][0])
         index = hosp.index('>')
         hosp = hosp[index+1:]
-        index = hosp.index('\n')
+        index = hosp.index('<')
         hosp = hosp[:index].strip().replace('.','')
 
         intensiv = str(data[0][1])
-        index = intensiv.index('\n')
+        index = intensiv.index('>')
         intensiv = intensiv[index+1:]
-        index = intensiv.index('\n')
+        index = intensiv.index('<')
         intensiv = intensiv[:index].strip().replace('.','')
 
         hosp_inz = str(data[0][1])[4:8].strip()
-
 
         last_update_kh = str(stand[0][7])
         index = last_update_kh.index(':')
