@@ -119,29 +119,40 @@ def retrieve_vaccine_data():
     by_vaccine_second_delta = vaccine.data.states.BY.secondVaccination.delta
     by_vaccine_second_quote = vaccine.data.states.BY.secondVaccination.quote * 100.00
 
+    de_vaccine_booster_total = vaccine.data.boosterVaccination.vaccinated
+    de_vaccine_booster_delta = vaccine.data.boosterVaccination.delta
+    de_vaccine_booster_quote = vaccine.data.boosterVaccination.quote * 100.00
+
+    by_vaccine_booster_total = vaccine.data.states.BY.boosterVaccination.vaccinated
+    by_vaccine_booster_delta = vaccine.data.states.BY.boosterVaccination.delta
+    by_vaccine_booster_quote = vaccine.data.states.BY.boosterVaccination.quote * 100.00
+
     de_vaccine_total = replace_comma(f'{de_vaccine_total:,}')
     de_vaccine_delta = replace_comma(f'{de_vaccine_delta:,}')
     by_vaccine_total = replace_comma(f'{by_vaccine_total:,}')
     by_vaccine_delta = replace_comma(f'{by_vaccine_delta:,}')
-
     de_vaccine_quote = replace_dot(format(de_vaccine_quote, '.2f')+'%')   
     by_vaccine_quote = replace_dot(format(by_vaccine_quote, '.2f')+'%')
 
     de_vaccine_second_total = replace_comma(f'{de_vaccine_second_total:,}')
     de_vaccine_second_delta = replace_comma(f'{de_vaccine_second_delta:,}')
-    
     de_vaccine_second_quote = replace_dot(format(de_vaccine_second_quote, '.2f')+'%')
-
     by_vaccine_second_total = replace_comma(f'{by_vaccine_second_total:,}')
     by_vaccine_second_delta = replace_comma(f'{by_vaccine_second_delta:,}')
-    
     by_vaccine_second_quote = replace_dot(format(by_vaccine_second_quote, '.2f')+'%')
+
+    de_vaccine_booster_total = replace_comma(f'{de_vaccine_booster_total:,}')
+    de_vaccine_booster_delta = replace_comma(f'{de_vaccine_booster_delta:,}')
+    de_vaccine_booster_quote = replace_dot(format(de_vaccine_booster_quote, '.2f')+'%')
+    by_vaccine_booster_total = replace_comma(f'{by_vaccine_booster_total:,}')
+    by_vaccine_booster_delta = replace_comma(f'{by_vaccine_booster_delta:,}')
+    by_vaccine_booster_quote = replace_dot(format(by_vaccine_booster_quote, '.2f')+'%')
 
     #print (last_update, de_vaccine_total, de_vaccine_delta, by_vaccine_total, by_vaccine_delta)
     global vaccine_dict
     vaccine_dict = {}
-    vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta, de_vaccine_quote, de_vaccine_second_total, de_vaccine_second_delta, de_vaccine_second_quote]
-    vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta, by_vaccine_quote, by_vaccine_second_total, by_vaccine_second_delta, by_vaccine_second_quote]
+    vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta, de_vaccine_quote, de_vaccine_second_total, de_vaccine_second_delta, de_vaccine_second_quote, de_vaccine_booster_total, de_vaccine_booster_delta, de_vaccine_booster_quote]
+    vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta, by_vaccine_quote, by_vaccine_second_total, by_vaccine_second_delta, by_vaccine_second_quote, by_vaccine_booster_total, by_vaccine_booster_delta, by_vaccine_booster_quote]
 
     path = os.path.join(os.path.expanduser("~/covid/"), 'vaccine_db')
     with shelve.open(path) as db:
@@ -447,7 +458,12 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
                             <td colspan = 2>Zweitimpfung<p> </p></td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][3]}<br><p1> +{vaccine_dict['DE'][4]}</p><br><p>{vaccine_dict['DE'][5]}</p></td>
                             <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][3]}<br><p1> +{vaccine_dict['BY'][4]}</p><br><p>{vaccine_dict['BY'][5]}</p></td>
-                        </tr>>
+                        </tr>
+                        <tr>
+                            <td colspan = 2>Boosterimpfung<p> </p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['DE'][6]}<br><p1> +{vaccine_dict['DE'][7]}</p><br><p>{vaccine_dict['DE'][8]}</p></td>
+                            <td colspan = 2 style="text-align:center">{vaccine_dict['BY'][6]}<br><p1> +{vaccine_dict['BY'][7]}</p><br><p>{vaccine_dict['BY'][8]}</p></td>
+                        </tr>
                         <tr>
                             <td colspan =  6 style="font-size: 10px !important; text-align:right !important;">letzte Aktualisierung RKI {last_update_vaccine_formated}<br>letzter Check {now}</td>
                            
