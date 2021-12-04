@@ -245,8 +245,13 @@ def retrieve_covid_data():
             prev_inzidenz_KEH = item['KEH'][1]
             prev_inzidenz_EI = item['EI'][1]
             #prev_inzidenz_DAH = item['DAH'][1]
-            if last_update == '16.01.2021, 00:00 Uhr':
-                prev_inzidenz_DAH = 138.8
+            if last_update == '04.12.2021, 00:00 Uhr':
+                prev_inzidenz_DAH = 410.8
+                prev_inzidenz_IN = 570.2
+                prev_inzidenz_KEH = 498.5
+                prev_inzidenz_EI = 559.4
+                prev_inzidenz_PAF = 545.3
+
             else:
                 prev_inzidenz_DAH = item['DAH'][1]
 
