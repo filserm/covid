@@ -46,14 +46,21 @@ def get_hospitalisierung():
         index = intensiv.index('<')
         intensiv = intensiv[:index].strip().replace('.','')
 
+        print ("intensivstation: ", intensiv)
+
         hosp_inz = str(data[0][1])[4:8].strip()
 
-        last_update_kh = str(stand[0][7])
+        last_update_kh = str(stand[0][8])
         index = last_update_kh.index(':')
         last_update_kh = last_update_kh[index+2:]
         index = last_update_kh.index('(')
         last_update_kh = last_update_kh[:index].strip()
 
+        print ("last update kh: ", last_update_kh)
+
+        if intensiv == 0:
+            exit()
+            
         data = {"krankenhaus" : hosp,
                 "intensivstation": intensiv,
                 "date": last_update_kh
