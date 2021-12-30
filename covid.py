@@ -421,7 +421,7 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
                                         color: white;
                                         background-color: lightgrey;
                                         margin-top: 7px;
-                                        margin-bottom: 7px;
+                                        margin-bottom: 30px;
                                         margin-left: 20px;
                                         margin-right: 20px;
                                         width:auto;
