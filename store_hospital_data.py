@@ -34,13 +34,13 @@ def get_hospitalisierung():
         data.append (html.find_all("strong"))
         stand.append(html.find_all("p"))     
         
-        hosp = str(data[0][0])
+        hosp = str(data[0][1])
         index = hosp.index('>')
         hosp = hosp[index+1:]
         index = hosp.index('<')
         hosp = hosp[:index].strip().replace('.','')
 
-        intensiv = str(data[0][1])
+        intensiv = str(data[0][2])
         index = intensiv.index('>')
         intensiv = intensiv[index+1:]
         index = intensiv.index('<')
