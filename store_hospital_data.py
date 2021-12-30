@@ -52,9 +52,7 @@ def get_hospitalisierung():
 
         last_update_kh = str(stand[0][8])
         index = last_update_kh.index(':')
-        last_update_kh = last_update_kh[index+2:]
-        index = last_update_kh.index('(')
-        last_update_kh = last_update_kh[:index].strip()
+        last_update_kh = last_update_kh[index+2:index+12]
 
         print ("last update kh: ", last_update_kh)
 
