@@ -50,12 +50,12 @@ def get_hospitalisierung():
 
         hosp_inz = str(data[0][1])[4:8].strip()
 
-        last_update_kh = str(stand[0][8])
+        last_update_kh = str(stand[0][12])
         index = last_update_kh.index(':')
         last_update_kh = last_update_kh[index+2:index+12]
 
         print ("last update kh: ", last_update_kh)
-
+        
         if intensiv == 0:
             exit()
             
