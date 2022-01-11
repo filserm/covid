@@ -315,8 +315,10 @@ def upload_html_b2():
     bucket = b2.buckets.get('coviddata')
 
     chart_file = open(chart_filename, 'rb')
+    chart_file_rki = open(chart_filename_rki, 'rb')
     try:
         bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
+        bucket.files.upload(contents=chart_filename_rki, file_name=chart_rki_out_filename)
     except Exception as error:
         print ("error: ", error)
 
@@ -358,10 +360,10 @@ def chart_rki(dataarr, datesarr):
     chart_rki_history_template_file = open(chart_rki_history_template, 'r')
     chart_code = chart_rki_history_template_file.readlines()
 
-    global chart_rki_out_filename, chart_filename
+    global chart_rki_out_filename, chart_filename_rki
     chart_rki_out_filename = 'chart_rki.html'
-    chart_filename = os.path.join(os.path.expanduser("~/covid/html_output"), chart_rki_out_filename)
-    chartfile = open (chart_filename, 'w')
+    chart_filename_rki = os.path.join(os.path.expanduser("~/covid/html_output"), chart_rki_out_filename)
+    chartfile = open (chart_filename_rki, 'w')
 
     for item in chart_code:
         if item.find('##DATUMSWERTE##') > 0:
