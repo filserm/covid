@@ -35,6 +35,8 @@ url = r'https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_L
 
 #germany data - marlon lückert
 rki_url = 'https://api.corona-zahlen.org/germany/'
+rki_url_history = 'https://api.corona-zahlen.org/germany/history/cases'
+rki_url_history = 'https://api.corona-zahlen.org/germany/history/incidence'
 
 #vaccine data
 vaccine_url = 'https://api.corona-zahlen.org/vaccinations'
@@ -50,6 +52,21 @@ wappen = {
             'KEH': 'https://f003.backblazeb2.com/file/coviddata/kelheim.png' ,
             'EI': 'https://f003.backblazeb2.com/file/coviddata/eichstaett.png' ,
 }
+
+
+def get_rki_history():
+    api_instance = Api(rki_url_history)
+    api_instance.set_session()
+    r = api_instance.parse_response()
+    datesarr, dataarr = [], []
+    for item in r.items():
+        if item[0] == 'data':
+            for elem in item[1]:
+                #dataarr.append(str(int(elem['cases'])))
+                dataarr.append(str(int(elem['weekIncidence'])))
+                datesarr.append(str(elem['date']))
+    return dataarr, datesarr
+
 
 def get_hospitalisierung():
     mongodb = Mongo(
@@ -333,6 +350,29 @@ def chart_html(hosp, intensiv, datum):
     chartfile.close()
 
 
+def chart_rki(dataarr, datesarr):
+    data  = ','.join(dataarr)
+    dates = ','.join(f'"{w}"' for w in datesarr)
+
+    chart_rki_history_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'chart_rki_history_template.html')
+    chart_rki_history_template_file = open(chart_rki_history_template, 'r')
+    chart_code = chart_rki_history_template_file.readlines()
+
+    global chart_rki_out_filename, chart_filename
+    chart_rki_out_filename = 'chart_rki.html'
+    chart_filename = os.path.join(os.path.expanduser("~/covid/html_output"), chart_rki_out_filename)
+    chartfile = open (chart_filename, 'w')
+
+    for item in chart_code:
+        if item.find('##DATUMSWERTE##') > 0:
+            item = item.replace('##DATUMSWERTE##', dates)
+        if item.find('##RKI_HISTORY##') > 0:
+            item = item.replace('##RKI_HISTORY##', data)
+        
+        chartfile.write(item)
+    chartfile.close()
+
+
 def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yesterday):
 
     print ("hospi:", hosp, "intensiv", intensiv)
@@ -420,17 +460,17 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
                                         
                                         color: white;
                                         background-color: lightgrey;
-                                        margin-top: 7px;
-                                        margin-bottom: 30px;
+                                        margin-top: 25px;
+                                        //margin-bottom: 30px;
                                         margin-left: 20px;
                                         margin-right: 20px;
                                         width:auto;
-                                        height:90px; 
-                                        border-style: ridge; 
+                                        height:70px; 
+                                        //border-style: ridge; 
                                         border-color: red;
-                                        padding: 10px;
+                                        //padding: 10px;
                                         ">
-                                    Neuinfektionen gg Vortag DE (RKI)
+                                    Neuinfektionen DE
                             <br><span>{de_rki_delta}</span><br></td></div></tr>
                             </td> 
                     
@@ -536,6 +576,9 @@ def main():
     hosp, intensiv, datum, hosp_diff_yesterday, intensiv_diff_yesterday = get_hospitalisierung()
     chart_html(hosp, intensiv, datum)
     
+    dataarr, datesarr = get_rki_history()
+    chart_rki(dataarr, datesarr)
+
     retrieve_covid_data()
     retrieve_vaccine_data()
     

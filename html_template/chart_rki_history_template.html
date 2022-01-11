@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.0.2/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc"></script>
+    <title>Document</title>
+
+    <style>
+        body {  
+        background: #14141d;
+        //padding: 16px;
+        }
+
+        canvas {
+
+            position: relative;
+            margin: auto;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 100vh;
+            width: 100vw;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- <div class="chart-container" style="position: relative; height:100vh; width:100vw">
+        <canvas id="myChartRKI" style="position: relative; height: 100vh; width: 100vw;"></canvas>
+    </div> -->
+
+    <div class="chart-container">
+        <canvas id="myChartRKI"></canvas>
+    </div>
+    
+    
+      
+      <script>    
+
+        
+            const data = {
+                
+                labels: [##DATUMSWERTE##],
+                
+                datasets: [{
+                    
+                        type: 'line',
+                        label: 'Inzidenz DE',
+                        data: [##RKI_HISTORY##],
+                        
+                        label: 'Before',
+                        backgroundColor: '#0b9fd8',
+                        borderColor: '#0b9fd8',
+                        datalabels: {
+                            color: '#000000'
+                        },
+                        pointRadius: 0, 
+                    }]
+                };
+         
+                
+                
+                const options = {
+                
+                responsive: true,
+                maintainAspectRatio: false,
+                // layout: {
+                //     padding: {
+                //         right: 20,  
+                //         bottom: 25
+                //     }
+                // },
+                animations: {
+                borderWidth: {
+                    duration: 4000,
+                    //delay: 2000,
+                    //easing: 'easeInOutQuart',
+                    from: 10,
+                    to: 1.5,
+                    loop: false
+                }
+                },
+                
+                scales: {
+                    y: {
+                        display: true,
+                        grid: {
+                            color: "white",
+                            // zeroLineWidth: 3,
+                            // zeroLineColor: "#ADD8E6",
+                        },
+                        //suggestedMin: 100,
+                        suggestedMax: 300,
+                        ticks: {
+                            color: "white",
+                            font: {
+                                size: 12,
+                                weight: "bold"
+                            },
+                            stepSize: 25,
+                            //padding: 100
+                        }
+                    },
+                    x: {
+                        display: true,
+                        grid: {
+                            zeroLineWidth: 3
+                        },
+                        ticks: {
+                            padding: 9,
+                            color: "white",
+                            font: {
+                                size: 12,
+                                weight: "bold"
+                            },
+                            autoSkip: false,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            //padding: -200 ,
+                            callback: function(val, index, values) {
+                                maxIndex = values.length - 1;
+                                let mid = Math.trunc(values.length / 2)
+                                datum = this.getLabelForValue(val).slice(0,10);
+                                console.log(datum);
+                                //return (index === maxIndex || index === 0) ? this.getLabelForValue(val) : '';
+                                return (index === maxIndex || index === mid|| index === 0) ? datum : '';
+                            }
+                       
+                        //suggestedMin: 0,
+                        //suggestedMax: 600
+                       }
+                    }
+                },
+                
+
+                plugins: {
+                        legend: {
+                            display: false,
+                            position: "right",
+                            align: "middle"
+
+                        }
+                    ,
+                    datalabels: {
+                        backgroundColor: function(context) {
+                            return context.dataset.backgroundColor;
+                        },
+                        borderRadius: 4,
+                        borderWidth: function(context) {
+                            let mid = Math.trunc(context.dataset.data.length / 2)
+                            //console.log("bla",mid)
+                            if (context.dataIndex === context.dataset.data.length - 1
+                                ||
+                                context.dataIndex === mid
+                                ||
+                                context.dataIndex === 0)
+                            {
+                                return 8;
+                            }
+                            return 0;
+                        }
+                        
+                        
+                        ,
+                        color: 'green',
+                        font: {
+                            weight: 'bold'
+                        },
+                        //formatter: Math.trunc,
+                        formatter: function(value, context) {
+                            let mid = Math.trunc(context.dataset.data.length / 2)
+                            if (context.dataIndex === context.dataset.data.length - 1
+                                ||
+                                context.dataIndex === mid
+                                ||
+                                context.dataIndex === 0)
+                            {   
+                                return value.y;
+                            }
+                            return "";
+                            
+                        },
+                        
+                    }
+                }
+            };
+        
+
+        const config = {
+        type: 'line',
+        data: data,
+        options: options ,
+        plugins: [ChartDataLabels],
+        };
+
+        
+
+        var myChartRKI = new Chart(
+            document.getElementById('myChartRKI'),
+            config,
+            
+        );
+       
+       
+    </script>
+</body>
+</html>
