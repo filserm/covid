@@ -318,7 +318,7 @@ def upload_html_b2():
     chart_file_rki = open(chart_filename_rki, 'rb')
     try:
         bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
-        bucket.files.upload(contents=chart_filename_rki, file_name=chart_rki_out_filename)
+        bucket.files.upload(contents=chart_file_rki, file_name=chart_rki_out_filename)
     except Exception as error:
         print ("error: ", error)
 
