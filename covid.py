@@ -145,9 +145,15 @@ def retrieve_vaccine_data():
     by_vaccine_booster_quote = vaccine.data.states.BY.boosterVaccination.quote * 100.00
 
     de_vaccine_total = replace_comma(f'{de_vaccine_total:,}')
-    de_vaccine_delta = replace_comma(f'{de_vaccine_delta:,}')
+    try:
+        de_vaccine_delta = replace_comma(f'{de_vaccine_delta:,}')
+    except: 
+        de_vaccine_delta = 'unkown'
     by_vaccine_total = replace_comma(f'{by_vaccine_total:,}')
-    by_vaccine_delta = replace_comma(f'{by_vaccine_delta:,}')
+    try:
+        by_vaccine_delta = replace_comma(f'{by_vaccine_delta:,}')
+    except:
+        by_vaccine_delta = 'unkown'
     de_vaccine_quote = replace_dot(format(de_vaccine_quote, '.2f')+'%')   
     by_vaccine_quote = replace_dot(format(by_vaccine_quote, '.2f')+'%')
 
@@ -158,10 +164,16 @@ def retrieve_vaccine_data():
     by_vaccine_second_delta = replace_comma(f'{by_vaccine_second_delta:,}')
     by_vaccine_second_quote = replace_dot(format(by_vaccine_second_quote, '.2f')+'%')
 
-    de_vaccine_booster_total = replace_comma(f'{de_vaccine_booster_total:,}')
+    try:
+        de_vaccine_booster_total = replace_comma(f'{de_vaccine_booster_total:,}')
+    except:
+        de_vaccine_booster_total = 'unkown'
     de_vaccine_booster_delta = replace_comma(f'{de_vaccine_booster_delta:,}')
     de_vaccine_booster_quote = replace_dot(format(de_vaccine_booster_quote, '.2f')+'%')
-    by_vaccine_booster_total = replace_comma(f'{by_vaccine_booster_total:,}')
+    try:
+        by_vaccine_booster_total = replace_comma(f'{by_vaccine_booster_total:,}')
+    except:
+        by_vaccine_booster_total = 'unknown'
     by_vaccine_booster_delta = replace_comma(f'{by_vaccine_booster_delta:,}')
     by_vaccine_booster_quote = replace_dot(format(by_vaccine_booster_quote, '.2f')+'%')
 
