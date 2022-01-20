@@ -41,6 +41,8 @@ rki_url_history = 'https://api.corona-zahlen.org/germany/history/incidence'
 #vaccine data
 vaccine_url = 'https://api.corona-zahlen.org/vaccinations'
 
+#intensivstation
+intensiv_url = 'https://europe-west3-brdata-corona.cloudfunctions.net/diviApi/query?area=BY&indicator=Patienten&filetype=json'
 
 now = dt.now()
 now = now.strftime("%d.%m.%Y, %H:%M Uhr") 
@@ -67,6 +69,15 @@ def get_rki_history():
                 datesarr.append(str(elem['date']))
     return dataarr, datesarr
 
+def get_intensiv():
+    api_instance = Api(intensiv_url)
+    api_instance.set_session()
+    r = api_instance.parse_response()
+    idatesarr, idataarr = [], []
+    for item in r:
+        idataarr.append(str(int(item['faelleCovidAktuell'])))
+        idatesarr.append(str(item['date']))
+    return idataarr, idatesarr
 
 def get_hospitalisierung():
     mongodb = Mongo(
@@ -588,8 +599,10 @@ class Inzidenz():
 
 def main():
     hosp, intensiv, datum, hosp_diff_yesterday, intensiv_diff_yesterday = get_hospitalisierung()
-    chart_html(hosp, intensiv, datum)
+    #chart_html(hosp, intensiv, datum)
     
+    idataarr, idatesarr = get_intensiv()
+    chart_html([], idataarr, idatesarr)
     dataarr, datesarr = get_rki_history()
     chart_rki(dataarr, datesarr)
 

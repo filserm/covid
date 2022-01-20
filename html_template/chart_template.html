@@ -142,7 +142,7 @@
                             callback: function(val, index, values) {
                                 maxIndex = values.length - 1;
                                 let mid = Math.trunc(values.length / 2)
-                                datum = this.getLabelForValue(val).slice(0,6);
+                                datum = this.getLabelForValue(val).slice(0,10);
                                 console.log(datum);
                                 //return (index === maxIndex || index === 0) ? this.getLabelForValue(val) : '';
                                 return (index === maxIndex || index === mid|| index === 0) ? datum : '';
