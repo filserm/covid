@@ -12,6 +12,8 @@ from mongo_db_insert import Mongo
 import time
 import socket
 from modules.api import Api
+import locale
+locale.setlocale(locale.LC_ALL, '')  # Use '' for auto, or force e.g. to 'en_US.UTF-8'
 
 hostname = socket.gethostname()
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -211,7 +213,7 @@ def retrieve_covid_data():
     data = pd.DataFrame([])
     data = pd.read_json(url, lines=True)
 
-    global de_rki, de_rki_delta
+    global de_rki, de_rki_delta, de_rki_delta_sep
 
     #try it 15 times
     for i in range(1,16):                   
@@ -222,6 +224,7 @@ def retrieve_covid_data():
             r = api_instance.parse_response()
             de_rki          = r.cases
             de_rki_delta    = r.delta.cases
+            de_rki_delta_sep = f'{r.delta.cases:,}'.replace(',','.')
             if type(de_rki_delta) == int:
                 break
         except Exception as e:
@@ -496,7 +499,7 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
                                         //padding: 10px;
                                         ">
                                     Neuinfektionen DE
-                            <br><span>{de_rki_delta}</span><br></td></div></tr>
+                            <br><span>{de_rki_delta_sep}</span><br></td></div></tr>
                             </td> 
                     
                               
@@ -603,6 +606,7 @@ def main():
     
     idataarr, idatesarr = get_intensiv()
     chart_html([], idataarr, idatesarr)
+    
     dataarr, datesarr = get_rki_history()
     chart_rki(dataarr, datesarr)
 
