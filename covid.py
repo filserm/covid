@@ -609,7 +609,7 @@ def main():
     retrieve_covid_data()
     retrieve_vaccine_data()
     
-    html(hosp[-1], intensiv[-1], datum[-1], hosp_diff_yesterday, intensiv_diff_yesterday)
+    html(hosp[-1], idataarr[-1], idatesarr[-1], hosp_diff_yesterday, intensiv_diff_yesterday)
     
     if 'rasp' in hostname:
         #upload only on raspberry
