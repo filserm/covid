@@ -260,11 +260,11 @@ def retrieve_covid_data():
     data['last_updateDAH'] = ingo.iloc[0][4]['attributes']['last_update']
     data['cases7_per_100kDAH'] = ingo.iloc[0][4]['attributes']['cases7_per_100k']
 
-    inzidenz_dict['IN'] = [str (data['countyIN'][0]), str(data['cases7_per_100kIN'][0])[:5], str(data['last_updateIN'][0])]
-    inzidenz_dict['PAF'] = [str (data['countyPAF'][0]), str(data['cases7_per_100kPAF'][0])[:5], str(data['last_updatePAF'][0])]
-    inzidenz_dict['KEH'] = [str (data['countyKEH'][0]), str(data['cases7_per_100kKEH'][0])[:5], str(data['last_updateKEH'][0])]
-    inzidenz_dict['EI'] = [str (data['countyEI'][0]), str(data['cases7_per_100kEI'][0])[:5], str(data['last_updateEI'][0])]
-    inzidenz_dict['DAH'] = [str (data['countyDAH'][0]), str(data['cases7_per_100kDAH'][0])[:5], str(data['last_updateDAH'][0])]
+    inzidenz_dict['IN'] = [str (data['countyIN'][0]), str(data['cases7_per_100kIN'][0])[:6], str(data['last_updateIN'][0])]
+    inzidenz_dict['PAF'] = [str (data['countyPAF'][0]), str(data['cases7_per_100kPAF'][0])[:6], str(data['last_updatePAF'][0])]
+    inzidenz_dict['KEH'] = [str (data['countyKEH'][0]), str(data['cases7_per_100kKEH'][0])[:6], str(data['last_updateKEH'][0])]
+    inzidenz_dict['EI'] = [str (data['countyEI'][0]), str(data['cases7_per_100kEI'][0])[:6], str(data['last_updateEI'][0])]
+    inzidenz_dict['DAH'] = [str (data['countyDAH'][0]), str(data['cases7_per_100kDAH'][0])[:6], str(data['last_updateDAH'][0])]
 
     last_update = ingo.iloc[0][0]['attributes']['last_update']
 
@@ -401,9 +401,7 @@ def chart_rki(dataarr, datesarr):
     chartfile.close()
 
 
-def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yesterday):
-
-    print ("hospi:", hosp, "intensiv", intensiv)
+def html(intensiv):
     
     add_line, new_line_hosp =  [], []
     i = 1
@@ -423,34 +421,16 @@ def html(hosp, intensiv, last_update_kh, hosp_diff_yesterday, intensiv_diff_yest
             try:
                 if int (intensiv) > 600:
                     text_color_intensiv = "red"
-                    text_color_hosp = "red"
-                elif int (hosp) > 1200 or int (intensiv) > 450:
-                    text_color_hosp = "yellow"
-                    text_color_intensiv = "yellow"
                 else:
-                    text_color_hosp = green
                     text_color_intensiv = green
             except:
-                text_color_hosp = green
                 text_color_intensiv = green
-            
-            if hosp_diff_yesterday > 0:
-                hosp_diff_yesterday = '+' + str(hosp_diff_yesterday)
-            if intensiv_diff_yesterday > 0:
-                intensiv_diff_yesterday = '+' + str(intensiv_diff_yesterday)
 
-            new_line_hosp.append(f'''
-                       
-            <tr>
-                <td colspan = 1 style="text-align:left"><img src="https://f003.backblazeb2.com/file/coviddata/hospital.png" class="kh_logo"></td>
-                <td colspan = 1 >Neuaufnahmen Krankenhaus (7 Tage)</td>
-                <td colspan = 2 style="line-height: 1; text-align: left; font-size: 20px; color:{text_color_hosp}">{hosp} <p2>{hosp_diff_yesterday}</p2></td>
-                <td colspan = 1 style="font-size: 10px !important; color:yellow !important;">> 1.200</td>
-            </tr>     
+            new_line_hosp.append(f'''                        
             <tr>
                 <td colspan = 1 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
                 <td colspan = 1 >Patienten auf Intensivstation</td>                
-                <td colspan = 2 style="line-height: 1; font-size: 20px; text-align:left; color:{text_color_intensiv}">{intensiv} <p2>{intensiv_diff_yesterday}</p2></td>
+                <td colspan = 2 style="line-height: 1; font-size: 20px; text-align:left; color:{text_color_intensiv}">{intensiv}</td>
                 <td colspan = 1 style="font-size: 10px !important; color: yellow !important">> 450<br><span1 style="font-size: 10px !important; color: red !important">> 600</span1></td>
             </tr>            
             ''')
@@ -600,10 +580,7 @@ class Inzidenz():
             #return f'<td>{self.county}</td> <td style="color:{color} !important;"><strong>{self.inzidenz_out}</strong></td><td colspan=2 style="color:{color_gn} !important; text-align:center important!">- {self.inzidenz_vortag_out} </td>'
 
 
-def main():
-    hosp, intensiv, datum, hosp_diff_yesterday, intensiv_diff_yesterday = get_hospitalisierung()
-    #chart_html(hosp, intensiv, datum)
-    
+def main():   
     idataarr, idatesarr = get_intensiv()
     chart_html([], idataarr, idatesarr)
     
@@ -613,7 +590,7 @@ def main():
     retrieve_covid_data()
     retrieve_vaccine_data()
     
-    html(hosp[-1], idataarr[-1], idatesarr[-1], hosp_diff_yesterday, intensiv_diff_yesterday)
+    html(idataarr[-1])
     
     if 'rasp' in hostname:
         #upload only on raspberry
