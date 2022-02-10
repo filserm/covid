@@ -10,7 +10,7 @@ class Api():
         self.session = requests.Session()
     
     def parse_response(self):
-        self.response = self.session.get(self.url)
+        self.response = self.session.get(self.url, verify=False, timeout=10)
         return json.loads(self.response.text, object_hook = lambda dict: DictWithAttributeAccess(dict))
         
 
