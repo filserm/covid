@@ -14,6 +14,9 @@ import socket
 from modules.api import Api
 import locale
 locale.setlocale(locale.LC_ALL, '')  # Use '' for auto, or force e.g. to 'en_US.UTF-8'
+import warnings
+warnings.filterwarnings("ignore")
+
 
 hostname = socket.gethostname()
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -63,12 +66,20 @@ def get_rki_history():
     api_instance.set_session()
     r = api_instance.parse_response()
     datesarr, dataarr = [], []
+    format_data = "%Y-%m-%d"
+    start_date = dt.strptime('2021-10-01', format_data)
     for item in r.items():
         if item[0] == 'data':
             for elem in item[1]:
-                #dataarr.append(str(int(elem['cases'])))
-                dataarr.append(str(int(elem['weekIncidence'])))
-                datesarr.append(str(elem['date']))
+                d = elem['date'].split('T')
+                d = d[0]
+               
+                d = dt.strptime(d, format_data)
+                print (d)
+                if d>start_date:
+                    #dataarr.append(str(int(elem['cases'])))
+                    dataarr.append(str(int(elem['weekIncidence'])))
+                    datesarr.append(str(elem['date']))
     return dataarr, datesarr
 
 def get_intensiv():
@@ -76,9 +87,14 @@ def get_intensiv():
     api_instance.set_session()
     r = api_instance.parse_response()
     idatesarr, idataarr = [], []
+    format_data = "%Y-%m-%d"
+    start_date = dt.strptime('2021-10-01', format_data)
     for item in r:
-        idataarr.append(str(int(item['faelleCovidAktuell'])))
-        idatesarr.append(str(item['date']))
+        d = dt.strptime(item['date'], format_data)
+        if d>start_date:
+            #print (d)
+            idataarr.append(str(int(item['faelleCovidAktuell'])))
+            idatesarr.append(str(item['date']))
     return idataarr, idatesarr
 
 def get_hospitalisierung():
