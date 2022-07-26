@@ -75,7 +75,7 @@ def get_rki_history():
                 d = d[0]
                
                 d = dt.strptime(d, format_data)
-                print (d)
+                
                 if d>start_date:
                     #dataarr.append(str(int(elem['cases'])))
                     dataarr.append(str(int(elem['weekIncidence'])))
