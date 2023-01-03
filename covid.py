@@ -355,8 +355,7 @@ def retrieve_covid_data():
 def upload_html_b2():    
     b2 = B2()
     bucket = b2.buckets.get('coviddata')
-    global chart_filename
-    print (chart_filename)
+
     chart_file = open(chart_filename, 'rb')
     chart_file_rki = open(chart_filename_rki, 'rb')
     try:
@@ -368,7 +367,7 @@ def upload_html_b2():
     text_file = open(html_filename, 'rb')
     bucket.files.upload(contents=text_file, file_name=html_out_filename)
 
-def chart_html(hosp, intensiv, datum):
+def chart_html(datum):
      
     datum    = ','.join(f'"{w}"' for w in datum)
     intensiv = ','.join(intensiv)
@@ -599,7 +598,7 @@ class Inzidenz():
 
 def main():   
     #idataarr, idatesarr = get_intensiv()
-    #chart_html([], idataarr, idatesarr)
+    chart_html([])
     
     dataarr, datesarr = get_rki_history()
     chart_rki(dataarr, datesarr)
