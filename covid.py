@@ -417,9 +417,9 @@ def chart_rki(dataarr, datesarr):
     chartfile.close()
 
 
-def html(intensiv):
+def html():
     
-    add_line, new_line_hosp =  [], []
+    add_line =  []
     i = 1
     html_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'covid_html_template.html')
     html_template_file = open(html_template, 'r')
@@ -431,29 +431,29 @@ def html(intensiv):
     htmlfile = open (html_filename, 'w')
 
     for item in html_code:
-        if item.find('##HOSPITALISIERUNG##') > 0:
+        #if item.find('##HOSPITALISIERUNG##') > 0:
 
-            green = '#56f86b'
-            try:
-                if int (intensiv) > 600:
-                    text_color_intensiv = "red"
-                else:
-                    text_color_intensiv = green
-            except:
-                text_color_intensiv = green
+            # green = '#56f86b'
+            # try:
+            #     if int (intensiv) > 600:
+            #         text_color_intensiv = "red"
+            #     else:
+            #         text_color_intensiv = green
+            # except:
+            #     text_color_intensiv = green
 
-            new_line_hosp.append(f'''                        
-            <tr>
-                <td colspan = 1 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
-                <td colspan = 1 >Patienten auf Intensivstation</td>                
-                <td colspan = 2 style="line-height: 1; font-size: 20px; text-align:left; color:{text_color_intensiv}">{intensiv}</td>
-                <td colspan = 1 style="font-size: 10px !important; color: yellow !important">> 450<br><span1 style="font-size: 10px !important; color: red !important">> 600</span1></td>
-            </tr>            
-            ''')
+            # new_line_hosp.append(f'''                        
+            # <tr>
+            #     <td colspan = 1 style="text-align:center"><img src="https://f003.backblazeb2.com/file/coviddata/icu.png" class="kh_logo"></td>
+            #     <td colspan = 1 >Patienten auf Intensivstation</td>                
+            #     <td colspan = 2 style="line-height: 1; font-size: 20px; text-align:left; color:{text_color_intensiv}">{intensiv}</td>
+            #     <td colspan = 1 style="font-size: 10px !important; color: yellow !important">> 450<br><span1 style="font-size: 10px !important; color: red !important">> 600</span1></td>
+            # </tr>            
+            # ''')
 
-            #new_line_hosp.append(f'<tr><td colspan = 13 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung {last_update_kh}</td></tr>')
-            new_line = ''.join(new_line_hosp)
-            item = item.replace('##HOSPITALISIERUNG##', new_line)
+            # #new_line_hosp.append(f'<tr><td colspan = 13 style="font-size: 10px !important; text-align:right !important; ">letzte Aktualisierung {last_update_kh}</td></tr>')
+            # new_line = ''.join(new_line_hosp)
+            # item = item.replace('##HOSPITALISIERUNG##', new_line)
              
 
         if item.find('##COVID_DATA##') > 0:
@@ -597,8 +597,8 @@ class Inzidenz():
 
 
 def main():   
-    idataarr, idatesarr = get_intensiv()
-    chart_html([], idataarr, idatesarr)
+    #idataarr, idatesarr = get_intensiv()
+    #chart_html([], idataarr, idatesarr)
     
     dataarr, datesarr = get_rki_history()
     chart_rki(dataarr, datesarr)
@@ -606,7 +606,9 @@ def main():
     retrieve_covid_data()
     retrieve_vaccine_data()
     
-    html(idataarr[-1])
+    #html(idataarr[-1])
+    html()
+    
     
     if 'rasp' in hostname:
         #upload only on raspberry
