@@ -370,8 +370,7 @@ def upload_html_b2():
 def chart_html(datum):
      
     datum    = ','.join(f'"{w}"' for w in datum)
-    intensiv = ','.join(intensiv)
-    hosp     = ','.join(hosp)
+
 
     chart_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'chart_template.html')
     chart_template_file = open(chart_template, 'r')
@@ -385,11 +384,7 @@ def chart_html(datum):
     for item in chart_code:
         if item.find('##DATUMSWERTE##') > 0:
             item = item.replace('##DATUMSWERTE##', datum)
-        if item.find('##INTENSIV##') > 0:
-            item = item.replace('##INTENSIV##', intensiv)
-        if item.find('##HOSPITAL##') > 0:
-            item = item.replace('##HOSPITAL##', hosp)
-        
+
         chartfile.write(item)
     chartfile.close()
 
