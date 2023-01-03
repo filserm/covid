@@ -355,7 +355,8 @@ def retrieve_covid_data():
 def upload_html_b2():    
     b2 = B2()
     bucket = b2.buckets.get('coviddata')
-
+    global chart_filename
+    print (chart_filename)
     chart_file = open(chart_filename, 'rb')
     chart_file_rki = open(chart_filename_rki, 'rb')
     try:
