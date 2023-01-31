@@ -1,3 +1,2 @@
-beautifulsoup4
 pymongo
-b2blaze
+b2sdk
