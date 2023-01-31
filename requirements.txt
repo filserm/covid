@@ -1,2 +1,3 @@
 pymongo
 b2sdk
+pandas
