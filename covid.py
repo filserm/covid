@@ -345,7 +345,7 @@ def retrieve_covid_data():
     fallzahlen_dict['DE'] = [str(last_update), str (de_rki)]
 
     path_db = os.path.join(os.path.expanduser(f"{path}covid/"), 'fallzahlen')
-    print ("pfad: ", path, "\n", path_db)
+
     with shelve.open(path_db) as db:
         db[last_update]=fallzahlen_dict
         #db['07.11.2020, 00:00 Uhr']=fallzahlen_dict
@@ -373,6 +373,7 @@ def upload_html_b2():
     
     local_file = Path(chart_filename).resolve()
     rki_file = Path(chart_filename_rki).resolve()
+    html_file = Path(html_filename).resolve()
     metadata = {"key": "value"}
        
     uploaded_file = bucket.upload_local_file(
@@ -389,6 +390,12 @@ def upload_html_b2():
     )
     print(b2_api.get_download_url_for_fileid(uploaded_file_rki.id_))
 
+    uploaded_html = bucket.upload_local_file(
+    local_file=html_file,
+    file_name=html_out_filename,
+    file_infos=metadata,
+    )
+    print(b2_api.get_download_url_for_fileid(uploaded_html.id_))
 
     # b2 = B2()
     # bucket = b2.buckets.get('coviddata')
