@@ -6,8 +6,8 @@ import os
 import shelve
 import ssl
 import dateutil.parser
-from b2blaze import B2
-from bs4 import BeautifulSoup #pip install beautifulsoup4
+import b2sdk.v2 as b2
+
 from mongo_db_insert import Mongo
 import time
 import socket
@@ -19,6 +19,12 @@ warnings.filterwarnings("ignore")
 
 
 hostname = socket.gethostname()
+global path
+if 'Pi' in hostname:
+    path = '/home/mike/gh_projects/'
+else:
+    path = '/Users/filser/Documents/'
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 try:
@@ -212,11 +218,11 @@ def retrieve_vaccine_data():
     vaccine_dict['DE'] = [de_vaccine_total, de_vaccine_delta, de_vaccine_quote, de_vaccine_second_total, de_vaccine_second_delta, de_vaccine_second_quote, de_vaccine_booster_total, de_vaccine_booster_delta, de_vaccine_booster_quote]
     vaccine_dict['BY'] = [by_vaccine_total, by_vaccine_delta, by_vaccine_quote, by_vaccine_second_total, by_vaccine_second_delta, by_vaccine_second_quote, by_vaccine_booster_total, by_vaccine_booster_delta, by_vaccine_booster_quote]
 
-    path = os.path.join(os.path.expanduser("~/covid/"), 'vaccine_db')
-    with shelve.open(path) as db:
+    path_db = os.path.join(os.path.expanduser(f"{path}covid/"), 'vaccine_db')
+    with shelve.open(path_db) as db:
         db[last_update_vaccine]=vaccine_dict
        
-    vaccineDB = shelve.open(path)
+    vaccineDB = shelve.open(path_db)
 
     for k, item in sorted(vaccineDB.items(), key=lambda x: (dt.strptime(x[0][:10], '%Y-%m-%d')), reverse=True):
         #print ("Datum", k, "item", item)
@@ -225,7 +231,7 @@ def retrieve_vaccine_data():
     
 
 def retrieve_covid_data():
- 
+    global path
     data = pd.DataFrame([])
     data = pd.read_json(url, lines=True)
 
@@ -284,16 +290,16 @@ def retrieve_covid_data():
 
     last_update = ingo.iloc[0][0]['attributes']['last_update']
 
-    path = os.path.join(os.path.expanduser("~/covid/"), 'inzidenz')
+    path_db = os.path.join(os.path.expanduser(f"{path}covid/"), 'inzidenz')
     #shelve.open(path)
     #with shelve.open('inzidenz') as db:
-    with shelve.open(path) as db:
+    with shelve.open(path_db) as db:
         #print ("key:", last_update)
         #print ("value:", inzidenz_dict)
         db[last_update]=inzidenz_dict
     
     
-    prev_inzidenz = shelve.open(path)
+    prev_inzidenz = shelve.open(path_db)
 
     for k, item in sorted(prev_inzidenz.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
         #print ("Datum", k)
@@ -338,12 +344,13 @@ def retrieve_covid_data():
     #fallzahlen_dict['DE'] = [str('07.11.2020, 00:00 Uhr'), str (600000)]
     fallzahlen_dict['DE'] = [str(last_update), str (de_rki)]
 
-    path = os.path.join(os.path.expanduser("~/covid/"), 'fallzahlen')
-    with shelve.open(path) as db:
+    path_db = os.path.join(os.path.expanduser(f"{path}covid/"), 'fallzahlen')
+
+    with shelve.open(path_db) as db:
         db[last_update]=fallzahlen_dict
         #db['07.11.2020, 00:00 Uhr']=fallzahlen_dict
     
-    prev_fallzahl = shelve.open(path)
+    prev_fallzahl = shelve.open(path_db)
     for k, item in sorted(prev_fallzahl.items(), key=lambda x: (dt.strptime(x[0][:10], '%d.%m.%Y')), reverse=True):
         #print ("Datum", k, "last_update", last_update)
         if k != last_update:
@@ -352,33 +359,70 @@ def retrieve_covid_data():
             #prev_fallzahl_BY = item['BY'][1]
             break
     
-def upload_html_b2():    
-    b2 = B2()
-    bucket = b2.buckets.get('coviddata')
+def upload_html_b2(): 
+    info = b2.InMemoryAccountInfo()
+    b2_api = b2.B2Api(info)
 
-    chart_file = open(chart_filename, 'rb')
-    chart_file_rki = open(chart_filename_rki, 'rb')
-    try:
-        bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
-        bucket.files.upload(contents=chart_file_rki, file_name=chart_rki_out_filename)
-    except Exception as error:
-        print ("error: ", error)
+    application_key_id = os.getenv("B2_KEY_ID")
+    application_key = os.getenv("B2_APPLICATION_KEY")
 
-    text_file = open(html_filename, 'rb')
-    bucket.files.upload(contents=text_file, file_name=html_out_filename)
+    b2_api.authorize_account("production", application_key_id, application_key)
+    bucket = b2_api.get_bucket_by_name("coviddata")
+
+    from pathlib import Path
+    
+    local_file = Path(chart_filename).resolve()
+    rki_file = Path(chart_filename_rki).resolve()
+    html_file = Path(html_filename).resolve()
+    metadata = {"key": "value"}
+       
+    uploaded_file = bucket.upload_local_file(
+    local_file=local_file,
+    file_name=chart_out_filename,
+    file_infos=metadata,
+    )
+    print(b2_api.get_download_url_for_fileid(uploaded_file.id_))
+
+    uploaded_file_rki = bucket.upload_local_file(
+    local_file=rki_file,
+    file_name=chart_rki_out_filename,
+    file_infos=metadata,
+    )
+    print(b2_api.get_download_url_for_fileid(uploaded_file_rki.id_))
+
+    uploaded_html = bucket.upload_local_file(
+    local_file=html_file,
+    file_name=html_out_filename,
+    file_infos=metadata,
+    )
+    print(b2_api.get_download_url_for_fileid(uploaded_html.id_))
+
+    # b2 = B2()
+    # bucket = b2.buckets.get('coviddata')
+
+    # chart_file = open(chart_filename, 'rb')
+    # chart_file_rki = open(chart_filename_rki, 'rb')
+    # try:
+    #     bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
+    #     bucket.files.upload(contents=chart_file_rki, file_name=chart_rki_out_filename)
+    # except Exception as error:
+    #     print ("error: ", error)
+
+    # text_file = open(html_filename, 'rb')
+    # bucket.files.upload(contents=text_file, file_name=html_out_filename)
 
 def chart_html(datum):
      
     datum    = ','.join(f'"{w}"' for w in datum)
 
 
-    chart_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'chart_template.html')
+    chart_template = os.path.join(os.path.expanduser(f"{path}covid/html_template"), 'chart_template.html')
     chart_template_file = open(chart_template, 'r')
     chart_code = chart_template_file.readlines()
 
     global chart_out_filename, chart_filename
     chart_out_filename = 'chart1.html'
-    chart_filename = os.path.join(os.path.expanduser("~/covid/html_output"), chart_out_filename)
+    chart_filename = os.path.join(os.path.expanduser(f"{path}covid/html_output"), chart_out_filename)
     chartfile = open (chart_filename, 'w')
 
     for item in chart_code:
@@ -393,13 +437,13 @@ def chart_rki(dataarr, datesarr):
     data  = ','.join(dataarr)
     dates = ','.join(f'"{w}"' for w in datesarr)
 
-    chart_rki_history_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'chart_rki_history_template.html')
+    chart_rki_history_template = os.path.join(os.path.expanduser(f"{path}covid/html_template"), 'chart_rki_history_template.html')
     chart_rki_history_template_file = open(chart_rki_history_template, 'r')
     chart_code = chart_rki_history_template_file.readlines()
 
     global chart_rki_out_filename, chart_filename_rki
     chart_rki_out_filename = 'chart_rki.html'
-    chart_filename_rki = os.path.join(os.path.expanduser("~/covid/html_output"), chart_rki_out_filename)
+    chart_filename_rki = os.path.join(os.path.expanduser(f"{path}covid/html_output"), chart_rki_out_filename)
     chartfile = open (chart_filename_rki, 'w')
 
     for item in chart_code:
@@ -416,13 +460,13 @@ def html():
     
     add_line =  []
     i = 1
-    html_template = os.path.join(os.path.expanduser("~/covid/html_template"), 'covid_html_template.html')
+    html_template = os.path.join(os.path.expanduser(f"{path}covid/html_template"), 'covid_html_template.html')
     html_template_file = open(html_template, 'r')
     html_code = html_template_file.readlines()
 
     global html_out_filename, html_filename
     html_out_filename = 'covid.html'
-    html_filename = os.path.join(os.path.expanduser("~/covid/html_output"), html_out_filename)
+    html_filename = os.path.join(os.path.expanduser(f"{path}covid/html_output"), html_out_filename)
     htmlfile = open (html_filename, 'w')
 
     for item in html_code:
@@ -604,8 +648,10 @@ def main():
     #html(idataarr[-1])
     html()
     
-    
-    if 'rasp' in hostname:
+    upload_html_b2()
+    exit()
+
+    if 'Pi' in hostname:
         #upload only on raspberry
         upload_html_b2() #backblaze bucket
     else:
