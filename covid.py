@@ -634,7 +634,7 @@ def main():
     html()
     
     
-    if 'rasp' in hostname:
+    if 'Pi' in hostname:
         #upload only on raspberry
         upload_html_b2() #backblaze bucket
     else:
