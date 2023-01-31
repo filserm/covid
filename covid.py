@@ -6,8 +6,8 @@ import os
 import shelve
 import ssl
 import dateutil.parser
-from b2blaze import B2
-from bs4 import BeautifulSoup #pip install beautifulsoup4
+import b2sdk.v2 as b2
+
 from mongo_db_insert import Mongo
 import time
 import socket
@@ -352,20 +352,49 @@ def retrieve_covid_data():
             #prev_fallzahl_BY = item['BY'][1]
             break
     
-def upload_html_b2():    
-    b2 = B2()
-    bucket = b2.buckets.get('coviddata')
+def upload_html_b2(): 
+    info = b2.InMemoryAccountInfo()
+    b2_api = b2.B2Api(info)
 
-    chart_file = open(chart_filename, 'rb')
-    chart_file_rki = open(chart_filename_rki, 'rb')
-    try:
-        bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
-        bucket.files.upload(contents=chart_file_rki, file_name=chart_rki_out_filename)
-    except Exception as error:
-        print ("error: ", error)
+    application_key_id = os.getenv("B2_KEY_ID")
+    application_key = os.getenv("B2_APPLICATION_KEY")
 
-    text_file = open(html_filename, 'rb')
-    bucket.files.upload(contents=text_file, file_name=html_out_filename)
+    b2_api.authorize_account("production", application_key_id, application_key)
+    bucket = b2_api.get_bucket_by_name("coviddata")
+
+    from pathlib import Path
+    local_file = Path(chart_filename).resolve()
+    rki_file = Path(chart_filename_rki).resolve()
+    metadata = {"key": "value"}
+
+    uploaded_file = bucket.upload_local_file(
+    local_file=local_file,
+    file_name=chart_filename,
+    file_infos=metadata,
+    )
+    print(b2_api.get_download_url_for_fileid(uploaded_file.id_))
+
+    uploaded_file_rki = bucket.upload_local_file(
+    local_file=rki_file,
+    file_name=chart_filename_rki,
+    file_infos=metadata,
+    )
+    print(b2_api.get_download_url_for_fileid(uploaded_file_rki.oaded_file.id_))
+
+
+    # b2 = B2()
+    # bucket = b2.buckets.get('coviddata')
+
+    # chart_file = open(chart_filename, 'rb')
+    # chart_file_rki = open(chart_filename_rki, 'rb')
+    # try:
+    #     bucket.files.upload(contents=chart_file, file_name=chart_out_filename)
+    #     bucket.files.upload(contents=chart_file_rki, file_name=chart_rki_out_filename)
+    # except Exception as error:
+    #     print ("error: ", error)
+
+    # text_file = open(html_filename, 'rb')
+    # bucket.files.upload(contents=text_file, file_name=html_out_filename)
 
 def chart_html(datum):
      
